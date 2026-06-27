@@ -1,26 +1,31 @@
 const express = require('express');
+const cors = require('cors');
 const path = require('path');
-const app = express();
 const { Pool } = require('pg');
 
-// ... tes configs CORS, express.json() ...
+const app = express();
+app.use(cors());
+app.use(express.json()); // <--- TRÈS IMPORTANT pour recevoir le JSON de la sonde !
 
-// On remonte d'un niveau pour sortir de 'api' et on va dans 'public'
+// ==========================================
+// 2. VOS ROUTES D'API (DOIVENT ÊTRE ICI EN PREMIER)
+// ==========================================
+app.post('/api/sensors', (req, res) => {
+    // Ton code existant pour insérer en BDD...
+});
+
+app.get('/api/sensors', (req, res) => {
+    // Ton code existant pour lire la BDD...
+});
+
+// ==========================================
+// 3. LES FICHIERS STATIQUES (EN DERNIER)
+// ==========================================
 const publicPath = path.join(__dirname, '..', 'public');
-
 app.use(express.static(publicPath));
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(publicPath, 'index.html'));
-});
-
-// Configuration de la base de données
-const pool = new Pool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    port: process.env.DB_PORT
 });
 
 // Route 1 : Récupérer toutes les sondes avec leur dernière mesure
