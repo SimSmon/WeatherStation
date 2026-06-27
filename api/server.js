@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json());
 
 const pool = new Pool({
-host: "postgres",
+host: "192.168.1.76",
 user: "weather",
 password: "weatherpass",
 database: "weather",
@@ -69,3 +69,11 @@ console.log(
 "Weather API running on port 3001"
 );
 });
+
+const path = require("path");
+
+app.use(
+  express.static(
+    path.join(__dirname, "public")
+  )
+);
