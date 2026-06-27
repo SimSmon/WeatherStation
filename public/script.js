@@ -1,0 +1,51 @@
+async function loadWeather() {
+
+    const response = await fetch("/api/sensors");
+    const sensors = await response.json();
+
+    indoor.innerHTML = "";
+    outdoor.innerHTML = "";
+
+    const indoor = document.getElementById("indoor");
+    const outdoor = document.getElementById("outdoor");
+
+    sensors.forEach(sensor => {
+
+    if (sensor.location === "indoor") {
+        indoor.innerHTML += createCard(sensor);
+    } else {
+        outdoor.innerHTML += createCard(sensor);
+    }
+
+});
+
+}
+
+function createCard(sensor) {
+
+    return `
+        <div class="card">
+
+            <h2>${sensor.name ?? sensor.sensor_id}</h2>
+
+            <p>🌡 ${sensor.temperature} °C</p>
+
+            <p>💧 ${sensor.humidity} %</p>
+
+            ${sensor.pressure != null ?
+                `<p>🌪 ${sensor.pressure} hPa</p>` : ""}
+
+            ${sensor.wind_speed != null ?
+                `<p>💨 ${sensor.wind_speed} km/h</p>` : ""}
+
+            ${sensor.luminosity != null ?
+                `<p>☀ ${sensor.luminosity} lux</p>` : ""}
+
+            ${sensor.battery != null ?
+                `<p>🔋 ${sensor.battery} V</p>` : ""}
+
+        </div>
+    `;
+}
+
+loadWeather();
