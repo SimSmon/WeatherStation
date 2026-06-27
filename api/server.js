@@ -1,7 +1,11 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const { pool } = require('pg');
+
+const { Pool } = require('pg');
+
+// Une seule ligne, Postgres va lire automatiquement les variables d'environnement de ton .env
+const pool = new Pool();
 
 const app = express();
 app.use(cors());
