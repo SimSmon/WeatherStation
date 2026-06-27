@@ -1,6 +1,7 @@
 const express = require("express");
 const { Pool } = require("pg");
 const path = require("path");
+const cors = require("cors");
 
 // 1. Toujours charger le .env en premier
 require("dotenv").config();
@@ -8,6 +9,7 @@ require("dotenv").config();
 const app = express();
 
 // Middlewares
+app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "../public")));
 
