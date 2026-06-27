@@ -11,10 +11,16 @@ const app = express();
 // Middlewares
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../public')));
 
+// 1. On indique le chemin relatif propre (on remonte d'un dossier avec '..')
+const publicPath = path.join(__dirname, '..', 'public');
+
+// 2. On donne ce chemin à Express
+app.use(express.static(publicPath));
+
+// 3. On force la route '/' à envoyer le bon fichier
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public', 'index.html'));
+    res.sendFile(path.join(publicPath, 'index.html'));
 });
 
 // Configuration de la base de données
