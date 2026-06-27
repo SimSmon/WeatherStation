@@ -1,26 +1,15 @@
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
+require("dotenv").config();
 
-const { Pool } = require('pg');
+const express = require("express");
+const cors = require("cors");
+const path = require("path");
+const { Pool } = require("pg");
 
-// Une seule ligne, Postgres va lire automatiquement les variables d'environnement de ton .env
 const pool = new Pool();
 
 const app = express();
 app.use(cors());
 app.use(express.json()); // <--- TRÈS IMPORTANT pour recevoir le JSON de la sonde !
-
-// ==========================================
-// 2. VOS ROUTES D'API (DOIVENT ÊTRE ICI EN PREMIER)
-// ==========================================
-app.post('/api/sensors', (req, res) => {
-    // Ton code existant pour insérer en BDD...
-});
-
-app.get('/api/sensors', (req, res) => {
-    // Ton code existant pour lire la BDD...
-});
 
 // ==========================================
 // 3. LES FICHIERS STATIQUES (EN DERNIER)
