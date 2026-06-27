@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const { Pool } = require('pg');
+const { pool } = require('pg');
 
 const app = express();
 app.use(cors());
