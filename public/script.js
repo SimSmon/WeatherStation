@@ -12,7 +12,7 @@ async function loadWeather() {
 
     // 3. Enfin on boucle
     sensors.forEach(sensor => {
-        if (sensor.location === "indoor") {
+        if (sensor.type === "indoor") {
             if (indoor) indoor.innerHTML += createCard(sensor);
         } else {
             if (outdoor) outdoor.innerHTML += createCard(sensor);

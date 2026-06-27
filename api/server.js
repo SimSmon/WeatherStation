@@ -28,7 +28,6 @@ app.get("/api/sensors", async (req, res) => {
                 s.sensor_id,
                 s.name,
                 s.location,
-                s.type,
                 m.temperature,
                 m.humidity,
                 m.pressure,
