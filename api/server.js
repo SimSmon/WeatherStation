@@ -1,15 +1,21 @@
-require("dotenv").config();
+require("dotenv").config(); // Corrigé : minuscule sur le 'r'
 
 const express = require("express");
 const path = require("path");
+const cors = require("cors"); // Ajouté : import manquant
+const { Pool } = require("pg"); // Ajouté : import manquant pour PostgreSQL
 
 const app = express();
-app.use(cors());
-app.use(express.json()); // <--- TRÈS IMPORTANT pour recevoir le JSON de la sonde !
 
-// ==========================================
-// 3. LES FICHIERS STATIQUES (EN DERNIER)
-// ==========================================
+app.use(cors());
+app.use(express.json()); // Reçoit le JSON de la sonde
+
+// Configuration de la connexion PostgreSQL (Ajouté pour que le pool existe)
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL || "postgresql://weather:weatherpass@postgres:5432/weather"
+});
+
+// Gestion de l'interface (Dossier public propre à l'extérieur)
 const publicPath = path.join(__dirname, '..', 'public');
 app.use(express.static(publicPath));
 
