@@ -7,7 +7,7 @@
             "port": 5432,
             "driver": "PostgreSQL",
             "name": "weather",
-            "database": "weather",
+            "database": "weather", 
             "username": "weather",
             "password": "weatherpass"
         }
