@@ -18,16 +18,16 @@ services:
       - "5432:5432"
 
   api:
-      build: ./api
-      container_name: weather-api
-      restart: unless-stopped
-
-      ports:
-        - "3001:3001"
-
-      # IMPORTANT : Dis à Docker de lire ton fichier .env !
-      env_file:
-        - .env
-
-      depends_on:
+    build: ./api
+    container_name: weather-api
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    env_file:
+      - .env
+    depends_on:
       - postgres
+    # === AJOUTE CES DEUX LIGNES ICI ===
+    volumes:
+      - .:/app              # Monte TOUT le projet (api + public) dans /app
+    working_dir: /app/api   # Dit à Node de s'exécuter dans /app/api

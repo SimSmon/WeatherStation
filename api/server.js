@@ -1,27 +1,14 @@
-const express = require("express");
-const { Pool } = require("pg");
-const path = require("path");
-const cors = require("cors");
-
-console.log("=== DOSSIER COURANT NODE ===", __dirname);
-console.log("=== COMPARAISON CHEMIN PUBLIC ===", path.join(__dirname, '..', 'public'));
-
-// 1. Toujours charger le .env en premier
-require("dotenv").config();
-
+const express = require('express');
+const path = require('path');
 const app = express();
 
-// Middlewares
-app.use(cors());
-app.use(express.json());
+// ... tes configurations CORS, json, etc. ...
 
-// 1. On indique le chemin relatif propre (on remonte d'un dossier avec '..')
+// __dirname vaut "/app/api". On recule avec ".." pour arriver dans "/app", puis on entre dans "public"
 const publicPath = path.join(__dirname, '..', 'public');
 
-// 2. On donne ce chemin à Express
 app.use(express.static(publicPath));
 
-// 3. On force la route '/' à envoyer le bon fichier
 app.get('/', (req, res) => {
     res.sendFile(path.join(publicPath, 'index.html'));
 });
