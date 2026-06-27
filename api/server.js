@@ -1,21 +1,22 @@
 require("dotenv").config();
 
 const express = require("express");
+const cors = require("cors");
 const path = require("path");
+const { Pool } = require("pg");
 
 const app = express();
-app.use(cors());
-app.use(express.json()); // <--- TRÈS IMPORTANT pour recevoir le JSON de la sonde !
 
-// ==========================================
-// 3. LES FICHIERS STATIQUES (EN DERNIER)
-// ==========================================
-const publicPath = path.join(__dirname, '..', 'public');
-app.use(express.static(publicPath));
-
-app.get('/', (req, res) => {
-    res.sendFile(path.join(publicPath, 'index.html'));
+const pool = new Pool({
+    host: process.env.POSTGRES_HOST,
+    user: process.env.POSTGRES_USER,
+    password: process.env.POSTGRES_PASSWORD,
+    database: process.env.POSTGRES_DB,
+    port: process.env.POSTGRES_PORT
 });
+
+app.use(cors());
+app.use(express.json());
 
 // Route 1 : Récupérer toutes les sondes avec leur dernière mesure
 app.get("/api/sensors", async (req, res) => {
