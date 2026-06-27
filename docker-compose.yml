@@ -18,12 +18,16 @@ services:
       - "5432:5432"
 
   api:
-    build: ./api
-    container_name: weather-api
-    restart: unless-stopped
+      build: ./api
+      container_name: weather-api
+      restart: unless-stopped
 
-    ports:
-      - "3001:3001"
+      ports:
+        - "3001:3001"
 
-    depends_on:
+      # IMPORTANT : Dis à Docker de lire ton fichier .env !
+      env_file:
+        - .env
+
+      depends_on:
       - postgres
