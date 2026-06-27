@@ -18,7 +18,9 @@ services:
       - "5432:5432"
 
   api:
-    build: ./api
+    build:
+      context: .                  # Dit à Docker que la racine du projet est le point de départ
+      dockerfile: ./api/Dockerfile # Dit à Docker où trouver le Dockerfile
     container_name: weather-api
     restart: unless-stopped
     ports:
@@ -27,7 +29,3 @@ services:
       - .env
     depends_on:
       - postgres
-    # === AJOUTE CES DEUX LIGNES ICI ===
-    volumes:
-      - .:/app              # Monte TOUT le projet (api + public) dans /app
-    working_dir: /app/api   # Dit à Node de s'exécuter dans /app/api

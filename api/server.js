@@ -2,9 +2,9 @@ const express = require('express');
 const path = require('path');
 const app = express();
 
-// ... tes configurations CORS, json, etc. ...
+// ... tes configs CORS, express.json() ...
 
-// __dirname vaut "/app/api". On recule avec ".." pour arriver dans "/app", puis on entre dans "public"
+// On remonte d'un niveau pour sortir de 'api' et on va dans 'public'
 const publicPath = path.join(__dirname, '..', 'public');
 
 app.use(express.static(publicPath));
