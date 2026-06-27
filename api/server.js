@@ -3,6 +3,9 @@ const { Pool } = require("pg");
 const path = require("path");
 const cors = require("cors");
 
+console.log("=== DOSSIER COURANT NODE ===", __dirname);
+console.log("=== COMPARAISON CHEMIN PUBLIC ===", path.join(__dirname, '..', 'public'));
+
 // 1. Toujours charger le .env en premier
 require("dotenv").config();
 
