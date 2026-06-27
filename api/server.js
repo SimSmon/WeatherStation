@@ -108,6 +108,6 @@ app.get("/api/latest", async (req, res) => {
 
 // Démarrage du serveur
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-    console.log(`🚀 Weather API running on port ${PORT}`);
+app.listen(PORT, "0.0.0.0", () => {
+    console.log(`🚀 Weather API running on port ${PORT} (Listening on all interfaces)`);
 });

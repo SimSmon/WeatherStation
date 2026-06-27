@@ -1,24 +1,23 @@
 async function loadWeather() {
-
     const response = await fetch("/api/sensors");
     const sensors = await response.json();
 
-    indoor.innerHTML = "";
-    outdoor.innerHTML = "";
-
+    // 1. On cible d'abord les éléments du DOM
     const indoor = document.getElementById("indoor");
     const outdoor = document.getElementById("outdoor");
 
+    // 2. Ensuite on les vide
+    if (indoor) indoor.innerHTML = "";
+    if (outdoor) outdoor.innerHTML = "";
+
+    // 3. Enfin on boucle
     sensors.forEach(sensor => {
-
-    if (sensor.location === "indoor") {
-        indoor.innerHTML += createCard(sensor);
-    } else {
-        outdoor.innerHTML += createCard(sensor);
-    }
-
-});
-
+        if (sensor.location === "indoor") {
+            if (indoor) indoor.innerHTML += createCard(sensor);
+        } else {
+            if (outdoor) outdoor.innerHTML += createCard(sensor);
+        }
+    });
 }
 
 function createCard(sensor) {
