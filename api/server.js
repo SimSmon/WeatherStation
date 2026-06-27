@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json());
 
 const pool = new Pool({
-host: "192.168.1.76",
+host: "postgres",
 user: "weather",
 password: "weatherpass",
 database: "weather",
