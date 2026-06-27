@@ -1,15 +1,26 @@
 body {
-
-font-family: Arial;
-padding: 20px;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background-color: #72707083;
 }
 
-.cards{
-    display:flex;
-    flex-wrap:wrap;
-    gap:20px;
+.section {
+    margin-bottom: 30px;
 }
 
-.card{
-    width:250px;
+/* Transforme la zone en grille/ligne alignée sous le titre */
+.cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+/* Donne un vrai look de carte "groupée" à ta sonde */
+.card {
+    background: rgb(167, 167, 167);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    min-width: 150px;
 }

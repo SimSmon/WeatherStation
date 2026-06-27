@@ -6,9 +6,15 @@
 
 <link rel="stylesheet" href="style.css"> </head>
 
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/css/weather-icons.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/ical.js/build/ical.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
 <body>
 
 <h1>Weather Station</h1>
+
+<div id="time"></div>
 
 <div class="section">
 
@@ -25,6 +31,31 @@
     <div id="outdoor" class="cards"></div>
 
 </div>
+
+        <div id="weatherCard" class="card">
+
+            <div id="weather">
+                Chargement météo...
+            </div>
+
+            <table id="forecastTable">
+
+                <thead>
+                    <tr>
+                        <th>Jour</th>
+                        <th>Icône</th>
+                        <th>Min</th>
+                        <th>Max</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>  
 
 <script src="script.js"></script>
 
