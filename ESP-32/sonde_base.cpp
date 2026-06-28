@@ -2,9 +2,11 @@
 #include <WiFiClient.h>
 #include <HTTPClient.h>
 #include <DHT.h>
-#include <esp_wifi.h> // <--- Ajoute cet include en haut de ton fichier
+#include <esp_wifi.h>
 
 // --- Configuration WiFi ---
+// ATTENTION : change ce mot de passe sur ta Freebox, il a été exposé.
+// Idéalement, mets ssid/password dans un fichier séparé (config.h) exclu du repo.
 const char* ssid = "Freebox-7721D6";
 const char* password = "m92wbq4246qfvdfrqr4c5n";
 
@@ -12,90 +14,141 @@ const char* password = "m92wbq4246qfvdfrqr4c5n";
 const char* serverUrl = "http://192.168.1.76:3001/api/weather";
 
 // --- Configuration Matérielle ---
-#define DHTPIN     14         // Capteur DHT11 connecté au GPIO 14
-#define LED_BLEUE  13         // Ta LED bleue externe connectée au GPIO 13
+#define DHTPIN     14
+#define LED_BLEUE  13
 
 #define DHTTYPE DHT11
 DHT dht(DHTPIN, DHTTYPE);
 
-const char* sensorId = "sonde1";
-const char* name = "sonde1";
+const char* sensorId = "Sonde1";
+const char* name = "Sonde1";
 const char* location = "indoor";
-const char* firmware = "1.0.10";
+const char* firmware = "1.1.1";
 
-int wifiRSSI = WiFi.RSSI();
+// --- Réglages de robustesse ---
+const unsigned long WIFI_CONNECT_TIMEOUT_MS = 15000;  // 15s max pour se connecter
+const unsigned long HTTP_TIMEOUT_MS = 8000;            // 8s max pour la requête HTTP
+const unsigned long SLEEP_DURATION_MS = 300000;        // 5 minutes
+const unsigned long SLEEP_CHUNK_MS = 1000;             // on dort par tranches de 1s
+const int DHT_MAX_RETRIES = 3;                         // tentatives de lecture capteur
 
-void setup() {
-  Serial.begin(115200);
-  dht.begin();
+// ==============================
+// Connexion WiFi avec timeout
+// ==============================
+bool connectWiFi() {
+  WiFi.disconnect(true);
+  delay(500);
 
-  // Configuration de la broche de la LED en mode SORTIE
-  pinMode(LED_BLEUE, OUTPUT);
-  digitalWrite(LED_BLEUE, LOW); // Éteinte au démarrage
+  WiFi.mode(WIFI_STA);
+  esp_wifi_set_ps(WIFI_PS_NONE); // Désactive l'économie d'énergie WiFi
 
-  WiFi.disconnect(true); // Efface les anciennes configurations stockées
-  delay(1000);
-
-  WiFi.mode(WIFI_STA);   // Force l'ESP32 à être UNIQUEMENT un client Wi-Fi
-  delay(1000);
-
-  // Connexion au WiFi
+  Serial.print("Connexion au WiFi");
   WiFi.begin(ssid, password);
-  esp_wifi_set_ps(WIFI_PS_NONE); // Désactive TOUTE économie d'énergie Wi-Fi
-  Serial.print("Connexion au WiFi...");
-  
-  // La LED clignote tant qu'on n'est pas connecté
+
+  unsigned long start = millis();
+
   while (WiFi.status() != WL_CONNECTED) {
+    if (millis() - start > WIFI_CONNECT_TIMEOUT_MS) {
+      Serial.println("\nTimeout de connexion WiFi.");
+      return false;
+    }
+
     digitalWrite(LED_BLEUE, HIGH);
     delay(250);
     digitalWrite(LED_BLEUE, LOW);
     delay(250);
     Serial.print(".");
   }
-  
+
   Serial.println("\nConnecté au WiFi !");
   Serial.print("Adresse IP de l'ESP : ");
   Serial.println(WiFi.localIP());
+  return true;
 }
 
+// ==============================
+// Sleep non bloquant par tranches
+// (laisse le système respirer, évite les soucis de watchdog)
+// ==============================
+void smartDelay(unsigned long totalMs) {
+  unsigned long elapsed = 0;
+  while (elapsed < totalMs) {
+    delay(SLEEP_CHUNK_MS);
+    elapsed += SLEEP_CHUNK_MS;
+    yield(); // laisse tourner les tâches WiFi internes
+  }
+}
+
+// ==============================
+// Setup
+// ==============================
+void setup() {
+  Serial.begin(115200);
+  dht.begin();
+
+  pinMode(LED_BLEUE, OUTPUT);
+  digitalWrite(LED_BLEUE, LOW);
+
+  connectWiFi(); // si ça échoue, on retentera dans loop()
+}
+
+// ==============================
+// Loop
+// ==============================
 void loop() {
-  // Vérification de la connexion WiFi avant d'envoyer
-  if (WiFi.status() == WL_CONNECTED) {
-    
-    // Lecture des données du DHT11
-    float h = dht.readHumidity();
-    float t = dht.readTemperature();
 
-    // Lecture de la qualité du WiFi
-    int wifiRSSI = WiFi.RSSI();
-
-    // On vérifie si la lecture a échoué
-    if (isnan(h) || isnan(t)) {
-      Serial.println("Échec de la lecture du capteur DHT11 !");
-      delay(5000); // On attend un peu avant de réessayer
-      return;
+  // --- 1. Vérifie / rétablit la connexion WiFi ---
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("WiFi déconnecté, tentative de reconnexion...");
+    if (!connectWiFi()) {
+      Serial.println("Reconnexion échouée, nouvelle tentative dans 10s.");
+      smartDelay(10000);
+      return; // on ressort, le loop() recommence direct (pas d'attente de 5min ici)
     }
+  }
 
+  // --- 2. Lecture du capteur avec retries ---
+  float h = NAN;
+  float t = NAN;
 
-    Serial.print("WiFi RSSI : ");
-    Serial.print(wifiRSSI);
-    Serial.println(" dBm");
+  for (int attempt = 0; attempt < DHT_MAX_RETRIES; attempt++) {
+    h = dht.readHumidity();
+    t = dht.readTemperature();
 
-    Serial.print("Température : "); Serial.print(t);
-    Serial.print("°C | Humidité : "); Serial.print(h); Serial.println("%");
+    if (!isnan(h) && !isnan(t)) break;
 
-    // --- EN TRAVAIL : On allume la LED bleue fixe ---
-    digitalWrite(LED_BLEUE, HIGH);
+    Serial.print("Lecture DHT11 échouée (tentative ");
+    Serial.print(attempt + 1);
+    Serial.println("/3)...");
+    delay(2000);
+  }
 
-    // Préparation de la requête HTTP
-    WiFiClient client;
-    HTTPClient http;
+  if (isnan(h) || isnan(t)) {
+    Serial.println("Abandon : capteur DHT11 illisible après plusieurs tentatives.");
+    smartDelay(SLEEP_DURATION_MS);
+    return;
+  }
 
-    http.begin(client, serverUrl);
-    http.addHeader("Content-Type", "application/json");
+  int wifiRSSI = WiFi.RSSI();
 
-    // Construction du payload JSON corrigé (avec les guillemets manquants \" autour des textes)
-    String jsonPayload =
+  Serial.print("WiFi RSSI : ");
+  Serial.print(wifiRSSI);
+  Serial.println(" dBm");
+
+  Serial.print("Température : "); Serial.print(t);
+  Serial.print("°C | Humidité : "); Serial.print(h); Serial.println("%");
+
+  digitalWrite(LED_BLEUE, HIGH);
+
+  // --- 3. Envoi HTTP avec timeout ---
+  WiFiClient client;
+  HTTPClient http;
+
+  http.setTimeout(HTTP_TIMEOUT_MS);
+  http.begin(client, serverUrl);
+  http.addHeader("Content-Type", "application/json");
+
+  String jsonPayload =
     "{"
     "\"sensor_id\":\"" + String(sensorId) + "\","
     "\"name\":\"" + String(name) + "\","
@@ -106,38 +159,28 @@ void loop() {
     "\"wifi_rssi\":" + String(wifiRSSI) +
     "}";
 
-    Serial.print("Envoi du JSON : ");
-    Serial.println(jsonPayload);
+  Serial.print("Envoi du JSON : ");
+  Serial.println(jsonPayload);
 
-    // Envoi de la requête POST
-    int httpResponseCode = http.POST(jsonPayload);
+  int httpResponseCode = http.POST(jsonPayload);
 
-    if (httpResponseCode > 0) {
-      String response = http.getString();
-      Serial.print("Code de réponse HTTP : ");
-      Serial.println(httpResponseCode);
-      Serial.print("Réponse du serveur : ");
-      Serial.println(response);
-    } else {
-      Serial.print("Erreur lors de l'envoi POST : ");
-      Serial.println(httpResponseCode);
-      Serial.println(http.errorToString(httpResponseCode));
-    }
-
-    // Libération des ressources
-    http.end();
-
-    // Petit délai pour te laisser le temps de voir la LED bleue fixe
-    delay(2000);
-
+  if (httpResponseCode > 0) {
+    String response = http.getString();
+    Serial.print("Code de réponse HTTP : ");
+    Serial.println(httpResponseCode);
+    Serial.print("Réponse du serveur : ");
+    Serial.println(response);
   } else {
-    Serial.println("Erreur : Non connecté au WiFi.");
+    Serial.print("Erreur lors de l'envoi POST : ");
+    Serial.println(http.errorToString(httpResponseCode));
   }
 
-  // --- FIN DU CYCLE : On éteint la LED bleue pour la phase de veille ---
+  http.end();
+
+  delay(2000);
   digitalWrite(LED_BLEUE, LOW);
 
-  // Attendre 5 minutes (5 min * 60 sec * 1000 ms = 300 000 ms)
+  // --- 4. Veille non bloquante de 5 minutes ---
   Serial.println("En veille pour 5 minutes...");
-  delay(300000); 
+  smartDelay(SLEEP_DURATION_MS);
 }
