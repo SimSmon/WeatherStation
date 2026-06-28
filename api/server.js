@@ -130,12 +130,15 @@ app.post("/api/weather", async (req, res) => {
             sensor_id,
             name,
             location,
+            firmware,
             temperature,
             humidity,
             pressure,
             wind_speed,
+            wind_direction,
             luminosity,
-            battery
+            battery,
+            wifi_rssi
         } = req.body;
 
         if(!sensor_id){
@@ -155,46 +158,50 @@ app.post("/api/weather", async (req, res) => {
         if(sensor.rows.length === 0){
 
             await pool.query(
-                `
-                INSERT INTO sensors
-                (sensor_id,name,location)
-                VALUES($1,$2,$3)
-                `,
+            `
+            INSERT INTO sensors
+            (sensor_id,name,location,type,firmware,last_seen)
+            VALUES($1,$2,$3,$4,$5,NOW())
+            `,
                 [
                     sensor_id,
                     name || sensor_id,
-                    location || "indoor"
+                    location || "indoor",
+                    "indoor",
+                    firmware || null
                 ]
             );
-
             console.log("Nouvelle sonde :", sensor_id);
-
         }
 
         // Ajoute la mesure
         await pool.query(
-            `
-            INSERT INTO measurements
-            (
-                sensor_id,
-                temperature,
-                humidity,
-                pressure,
-                wind_speed,
-                luminosity,
-                battery
-            )
-            VALUES
-            ($1,$2,$3,$4,$5,$6,$7)
-            `,
-            [
-                sensor_id,
-                temperature ?? null,
-                humidity ?? null,
-                pressure ?? null,
-                wind_speed ?? null,
-                luminosity ?? null,
-                battery ?? null
+        `
+        INSERT INTO measurements
+        (
+            sensor_id,
+            temperature,
+            humidity,
+            pressure,
+            wind_speed,
+            wind_direction,
+            luminosity,
+            battery,
+            wifi_rssi
+        )
+        VALUES
+        ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+        `,
+        [
+            sensor_id,
+            temperature ?? null,
+            humidity ?? null,
+            pressure ?? null,
+            wind_speed ?? null,
+            wind_direction ?? null,
+            luminosity ?? null,
+            battery ?? null,
+            wifi_rssi ?? null
             ]
         );
 
