@@ -11,9 +11,13 @@ async function loadWeather() {
         const outdoorCards = [];
 
         sondes.forEach(sonde => {
+            const wifi = getWifiIcon(sonde.wifi_rssi);
             const cardHTML = `
                 <div class="card">
-                    <h3>${sonde.name}</h3>
+                    <div class="card-header">
+                        <h3>${sonde.name}</h3>
+                        <i class="bi ${wifi.icon} wifi-icon" title="${wifi.label} (${sonde.wifi_rssi ?? "?"} dBm)"></i>
+                    </div>
                     <p>🌡️ ${sonde.temperature ?? "--"} °C</p>
                     <p>💧 ${sonde.humidity ?? "--"} %</p>
                 </div>
@@ -93,6 +97,26 @@ function getMonths(code) {
 // ==============================
 // Météo Open-Meteo
 // ==============================
+
+// ==============================
+// Icône WiFi selon le RSSI (dBm)
+// ==============================
+
+function getWifiIcon(rssi) {
+    if (rssi === null || rssi === undefined) {
+        return { icon: "bi-wifi-off", label: "Hors ligne" };
+    }
+    if (rssi >= -55) {
+        return { icon: "bi-wifi", label: "Excellent" };
+    }
+    if (rssi >= -67) {
+        return { icon: "bi-wifi-2", label: "Bon" };
+    }
+    if (rssi >= -75) {
+        return { icon: "bi-wifi-1", label: "Faible" };
+    }
+    return { icon: "bi-wifi-off", label: "Très faible" };
+}
 
 function getWeatherIcon(code) {
     switch (code) {
