@@ -1,7 +1,7 @@
 body {
     font-family: Arial, sans-serif;
     padding: 20px;
-    background-color: #72707083;
+    background-color: #707070;
 }
 
 .section {
@@ -23,4 +23,27 @@ body {
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     min-width: 150px;
+}
+
+/* Tableau de prévisions météo */
+#forecastTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+#forecastTable th,
+#forecastTable td {
+    text-align: center;
+    padding: 6px 10px;
+}
+
+#weather table {
+    width: 100%;
+}
+
+#weather table td,
+#weather table th {
+    text-align: center;
+    padding: 4px;
 }

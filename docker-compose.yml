@@ -17,10 +17,19 @@ services:
     ports:
       - "5432:5432"
 
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U weather -d weather"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+    networks:
+      - weather-net
+
   api:
     build:
-      context: .                  # Dit à Docker que la racine du projet est le point de départ
-      dockerfile: ./api/Dockerfile # Dit à Docker où trouver le Dockerfile
+      context: .                  # La racine du projet est le point de départ
+      dockerfile: ./api/Dockerfile # Où trouver le Dockerfile
     container_name: weather-api
     restart: unless-stopped
     ports:
@@ -28,4 +37,11 @@ services:
     env_file:
       - .env
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+    networks:
+      - weather-net
+
+networks:
+  weather-net:
+    driver: bridge

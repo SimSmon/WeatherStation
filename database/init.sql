@@ -40,3 +40,8 @@ CREATE TABLE IF NOT EXISTS measurements (
         REFERENCES sensors(sensor_id)
         ON DELETE CASCADE
 );
+
+-- Index pour accélérer la requête "dernière mesure par sonde"
+-- (utilisée par DISTINCT ON (sensor_id) ... ORDER BY sensor_id, created_at DESC)
+CREATE INDEX IF NOT EXISTS idx_measurements_sensor_created
+    ON measurements (sensor_id, created_at DESC);
