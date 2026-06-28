@@ -1,18 +1,42 @@
+CREATE TABLE IF NOT EXISTS sensors (
+
+    sensor_id VARCHAR(50) PRIMARY KEY,
+
+    name VARCHAR(100),
+
+    location VARCHAR(50),
+
+    type VARCHAR(20),
+
+    firmware VARCHAR(20),
+
+    last_seen TIMESTAMP,
+
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
 CREATE TABLE IF NOT EXISTS measurements (
 
-id SERIAL PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
 
-sensor_id VARCHAR(50),
+    sensor_id VARCHAR(50) NOT NULL,
 
-temperature REAL,
+    temperature REAL,
+    humidity REAL,
+    pressure REAL,
 
-humidity REAL,
+    wind_speed REAL,
+    wind_direction REAL,
 
-pressure REAL,
+    luminosity REAL,
 
-battery REAL,
+    battery REAL,
 
-luminosity REAL,
+    wifi_rssi INTEGER,
 
-created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT NOW(),
+
+    FOREIGN KEY(sensor_id)
+        REFERENCES sensors(sensor_id)
+        ON DELETE CASCADE
 );
