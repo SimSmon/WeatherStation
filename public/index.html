@@ -11,42 +11,46 @@
 </head>
 <body>
 
-    <h1>Weather Station</h1>
-
     <div id="time"></div>
 
     <div class="section">
-        <h2>🏠 Intérieur</h2>
-        <div id="indoor" class="cards"></div>
+        <div id="sondes" class="cards"></div>
     </div>
 
-    <div class="section">
-        <h2>🌳 Extérieur</h2>
-        <div id="outdoor" class="cards"></div>
-    </div>
+    <table>
+        <tr>
+            <td>
+                <div id="weatherCard" class="card">
 
-    <div id="weatherCard" class="card">
+                    <div id="weather">
+                        Chargement météo...
+                    </div>
 
-        <div id="weather">
-            Chargement météo...
-        </div>
+                    <table id="forecastTable">
+                        <thead>
+                            <tr>
+                                <th>Jour</th>
+                                <th>Icône</th>
+                                <th>Min</th>
+                                <th>Max</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
 
-        <table id="forecastTable">
-            <thead>
-                <tr>
-                    <th>Jour</th>
-                    <th>Icône</th>
-                    <th>Min</th>
-                    <th>Max</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+                </div>
+            </td>
+            <td>
+                <div id="metarCard" class="card">
+                    <div id="metar">
+                        Chargement metar...
+                    </div>
+                </div>
+            </td>
+        </tr>
 
-    </div>
-
-    <div id="metar"></div>
+    </table>
 
     <script src="script.js"></script>
 

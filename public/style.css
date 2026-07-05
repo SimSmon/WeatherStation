@@ -1,7 +1,8 @@
 body {
     font-family: Arial, sans-serif;
+    color: white;
     padding: 20px;
-    background-color: #707070;
+    background-color: #020309;
 }
 
 .section {
@@ -18,7 +19,7 @@ body {
 
 /* Donne un vrai look de carte "groupée" à ta sonde */
 .card {
-    background: rgb(167, 167, 167);
+    background: #212d467c;
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -46,4 +47,289 @@ body {
 #weather table th {
     text-align: center;
     padding: 4px;
+}
+
+.metarCard{
+
+    background:#1d2228;
+    border-radius:15px;
+    padding:20px;
+
+    color:white;
+
+}
+
+.metarHeader{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    margin-bottom:15px;
+
+}
+
+.metarHeader h2{
+
+    margin:0;
+    color:#4db6ff;
+
+}
+
+.metarTime{
+
+    font-size:20px;
+    font-weight:bold;
+
+}
+
+.flightRule{
+
+    width:90px;
+    text-align:center;
+
+    padding:8px;
+
+    border-radius:8px;
+
+    font-weight:bold;
+
+    margin-bottom:20px;
+
+}
+
+.flightRule.VFR{
+
+    background:#1b5e20;
+    color:#9cff57;
+
+}
+
+.flightRule.MVFR{
+
+    background:#1565c0;
+
+}
+
+.flightRule.IFR{
+
+    background:#c62828;
+
+}
+
+.flightRule.LIFR{
+
+    background:#8e24aa;
+
+}
+
+.metarGrid{
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:15px;
+
+}
+
+.metarItem{
+
+    background:#2a3038;
+
+    border-radius:10px;
+
+    padding:15px;
+
+    text-align:center;
+
+}
+
+.metarItem i{
+
+    font-size:32px;
+
+    color:#4db6ff;
+
+}
+
+.metarItem span{
+
+    display:block;
+
+    font-size:28px;
+
+    margin-top:10px;
+
+    font-weight:bold;
+
+}
+
+.metarItem small{
+
+    color:#999;
+
+}
+
+.metarClouds{
+
+    margin-top:20px;
+
+    text-align:center;
+
+}
+
+.cover{
+
+    font-size:34px;
+
+    color:#7CFC00;
+
+    font-weight:bold;
+
+}
+
+.metarRaw{
+
+    margin-top:20px;
+
+    font-family:monospace;
+
+    background:black;
+
+    color:#57ff57;
+
+    padding:10px;
+
+    border-radius:8px;
+
+}
+
+.windCompass{
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:25px;
+
+}
+
+.compass{
+
+    position:relative;
+
+    width:140px;
+    height:140px;
+
+    border:2px solid #4db6ff;
+    border-radius:50%;
+
+}
+
+.needle{
+
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    width:4px;
+    height:48px;
+
+    background:#ff4444;
+
+    border-radius:4px;
+
+    transform-origin:center bottom;
+
+}
+
+.needle::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:-10px;
+    left:-6px;
+
+    border-left:8px solid transparent;
+    border-right:8px solid transparent;
+    border-bottom:12px solid #ff4444;
+
+}
+
+.compass::after{
+
+    content:"";
+
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    width:10px;
+    height:10px;
+
+    background:white;
+
+    border-radius:50%;
+
+    transform:translate(-50%,-50%);
+}
+
+.north{
+
+    position:absolute;
+    top:8px;
+    left:50%;
+    transform:translateX(-50%);
+
+}
+
+.south{
+
+    position:absolute;
+    bottom:8px;
+    left:50%;
+    transform:translateX(-50%);
+
+}
+
+.east{
+
+    position:absolute;
+    right:10px;
+    top:50%;
+    transform:translateY(-50%);
+
+}
+
+.west{
+
+    position:absolute;
+    left:10px;
+    top:50%;
+    transform:translateY(-50%);
+
+}
+
+.windInfo{
+
+    text-align:center;
+
+}
+
+.windDir{
+
+    font-size:32px;
+    font-weight:bold;
+
+}
+
+.windSpeed{
+
+    font-size:24px;
+    color:#4db6ff;
+
 }

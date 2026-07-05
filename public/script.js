@@ -7,39 +7,28 @@ async function loadWeather() {
         const response = await fetch('http://192.168.1.76:3001/api/sensors');
         const sondes = await response.json();
 
-        const indoorCards = [];
-        const outdoorCards = [];
+        const sondeCards = [];
 
         sondes.forEach(sonde => {
             const wifi = getWifiIcon(sonde.wifi_rssi);
             const cardHTML = `
                 <div class="card">
                     <div class="card-header">
-                        <h3>${sonde.name}</h3>
-                        <i class="bi ${wifi.icon} wifi-icon" title="${wifi.label} (${sonde.wifi_rssi ?? "?"} dBm)"></i>
+                        <h3><i class="bi ${wifi.icon} wifi-icon" title="${wifi.label} (${sonde.wifi_rssi ?? "?"} dBm)">${sonde.name}</i></h3> 
                     </div>
-                    ${sonde.created_at
-                        ? `<p><i class="wi wi-time-3"></i> ${new Date(sonde.created_at).toLocaleTimeString("fr-FR", {
-                            hour: "2-digit",
-                            minute: "2-digit"
-                        })}</p>`
-                        : ""
-                    }                    
-                    <p>🌡️ ${sonde.temperature ?? "--"} °C</p>
-                    <p>💧 ${sonde.humidity ?? "--"} %</p>
-                    ${sonde.pressure != null ? `<p><i class="wi wi-barometer"></i> ${sonde.pressure} hPa</p>` : "" }                
+                     
+                    <h1 style="color: orange;">🌡️ ${sonde.temperature ?? "--"} °C</h1>
+                    <p><i class="wi wi-drop"></i>${sonde.humidity ?? "--"} %</p>
+                    ${sonde.pressure != null ? `<p><i class="wi wi-barometer"></i> ${sonde.pressure} hPa</p>` : "" }      
+                    ${sonde.created_at ? `<p><i class="wi wi-time-3"></i> ${new Date(sonde.created_at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}</p>` : "" }            
                 </div>
             `;
 
-            if (sonde.location === 'intérieur' || sonde.location === 'indoor') {
-                indoorCards.push(cardHTML);
-            } else {
-                outdoorCards.push(cardHTML);
-            }
+            sondeCards.push(cardHTML);
+
         });
 
-        document.getElementById('indoor').innerHTML = indoorCards.join('');
-        document.getElementById('outdoor').innerHTML = outdoorCards.join('');
+        document.getElementById('sondes').innerHTML = sondeCards.join('');
 
     } catch (error) {
         console.error("Erreur d'affichage :", error);
@@ -172,6 +161,7 @@ async function loadWeatherFM() {
         const iconClass = getWeatherIcon(weatherCode);
 
         document.getElementById("weather").innerHTML = `
+            <h1>METEO FRANCE</h1>
             <table>
                 <tr>
                     <td><p><i class="wi wi-strong-wind"></i>${wind_speed_10m}Km/H</p></td>
@@ -181,7 +171,7 @@ async function loadWeatherFM() {
                 </tr>
                 <tr>
                     <th><h1><i class="wi ${iconClass}"></i></h1></th>
-                    <th><h1><i class="wi wi-thermometer"></i>${temp}<i class="wi wi-degrees"></i></h1></th>
+                    <th><h1 style="color: orange;"><i class="wi wi-thermometer"></i>${temp}<i class="wi wi-degrees"></i></h1></th>
                 </tr>
                 <tr>
                     <td><p>ressenti ${app_temp}°C</p></td>
@@ -226,56 +216,128 @@ async function loadWeatherFM() {
 }
 
 async function loadWeatherMetar() {
+
     try {
-        const url =
-            "https://aviationweather.gov/api/data/" +
-            "metar?" +
-            "ids=LFRN&" +
-            "format=json";
 
-        const response = await fetch("/api/metar");        
-        const data = await response.json();
-
+        const response = await fetch("/api/metar");
+        const json = await response.json();
         const data = json[0];
 
-        const time = data.reportTime;
-        const temp = data.temp; 
-        const dewp = data.dewp;
-        const wdir = data.wdir;
-        const wspd = data.wspd;
-        const visib = data.visib;
-        const altPress = data.altim;
-        const cover = data.cover;
-
-        //const qcFieldClass = getqcField(qcField);
-
         document.getElementById("metar").innerHTML = `
-            <table>
-                <tr>
-                    <td><p>${time}</p></td>
-                </tr>
-                <tr>
-                    <td><p><i class="wi wi-strong-wind"></i>${wspd}Kts</p></td>
-                    <td><p><i class="wi wi-direction-up-right"></i>${wdir}°</p></td>
-                </tr>
-                <tr>
-                    <th><h1><i class="wi ${iconClass}"></i></h1></th>
-                    <th><h1><i class="wi wi-thermometer"></i>${temp}<i class="wi wi-degrees"></i></h1></th>
-                </tr>
-                <tr>
-                    <td><p>${dewp}<i class="wi wi-humidity"></i></p></td>
-                    <td><p>${altPress}<i class="wi wi-barometer"></i></p></td>
-                </tr>
-                <tr>
-                    <td><p>Max : ${cover}</p></td>
-                    <td><p>Max : ${visib}</p></td>
-                </tr>
-            </table>
+
+
+            <div class="metarHeader">
+
+                <h2>
+                    <i class="bi bi-airplane-fill"></i>
+                    LFRN METAR
+                </h2>
+
+                <div class="metarTime">
+                    ${new Date(data.reportTime).toLocaleTimeString("fr-FR", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        timeZone: "UTC"
+                    })} UTC
+                </div>
+
+            </div>
+
+
+            <div class="flightRule ${data.fltCat}">
+                ${data.fltCat}
+            </div>
+
+
+            <div class="metarGrid">
+
+                <div class="metarItem">
+                    <i class="wi wi-thermometer"></i>
+                    <span>${data.temp}°C</span>
+                    <small>Température</small>
+                </div>
+
+                <div class="metarItem">
+                    <i class="wi wi-humidity"></i>
+                    <span>${data.dewp}°C</span>
+                    <small>Point de rosée</small>
+                </div>
+
+                <div class="metarItem">
+                    <i class="wi wi-barometer"></i>
+                    <span>${data.altim}</span>
+                    <small>QNH</small>
+                </div>
+
+                <div class="windCompass">
+
+                    <div class="compass">
+
+                        <div
+                            class="needle"
+                            style="
+                                transform:
+                                    translate(-50%,-50%)
+                                    rotate(${data.wdir}deg);
+                            ">
+                        </div>
+
+                        <div class="north">N</div>
+                        <div class="south">S</div>
+                        <div class="east">E</div>
+                        <div class="west">W</div>
+
+                    </div>
+
+                    <div class="windInfo">
+
+                        <div class="windDir">
+                            ${data.wdir}°
+                        </div>
+
+                        <div class="windSpeed">
+                            ${data.wspd} kt
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="metarItem">
+                    <i class="wi wi-fog"></i>
+                    <span>${data.visib}</span>
+                    <small>Visibilité</small>
+                </div>
+
+                <div class="metarItem">
+                    <div class="cover">
+                        ${data.cover}
+                    </div>
+                    <div>
+                        ${data.cloud}
+                    </div>
+                </div>
+            </div>
+
+            </div>
+
+            <div class="metarRaw">
+
+                ${data.rawOb}
+
+            </div>
+
+
         `;
 
-    } catch (error) {
-        console.error("Erreur météo Open-Meteo :", error);
     }
+
+    catch (err) {
+
+        console.error(err);
+
+    }
+
 }
 
 // ==============================
