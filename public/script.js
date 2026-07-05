@@ -139,10 +139,10 @@ async function loadWeatherFM() {
             "&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_direction_10m,surface_pressure" +
             "&timezone=auto&forecast_days=5" +
             `&cb=${cacheBuster}`;
-
+ 
         const response = await fetch(url);
         const data = await response.json();
-
+ 
         const temp = data.current.temperature_2m;
         const rel_hum = data.current.relative_humidity_2m;
         const precipitation = data.current.precipitation;
@@ -151,69 +151,93 @@ async function loadWeatherFM() {
         const wind_direction_10m = data.current.wind_direction_10m;
         const wind_speed_10m = data.current.wind_speed_10m;
         const weatherCode = data.current.weather_code;
-
+ 
         const todayMax = data.daily.temperature_2m_max[0];
         const todayMin = data.daily.temperature_2m_min[0];
-
+ 
         const sunrise = data.daily.sunrise[0];
         const sunset = data.daily.sunset[0];
-
+ 
         const iconClass = getWeatherIcon(weatherCode);
-
+ 
         document.getElementById("weather").innerHTML = `
-            <h1>METEO FRANCE</h1>
-            <table>
-                <tr>
-                    <td><p><i class="wi wi-strong-wind"></i>${wind_speed_10m}Km/H</p></td>
-                    <td><p><i class="wi wi-direction-up-right"></i>${wind_direction_10m}°</p></td>
-                    <td><p><i class="wi wi-sunrise"></i>${sunrise.split("T")[1]}</p></td>
-                    <td><p><i class="wi wi-sunset"></i>${sunset.split("T")[1]}</p></td>
-                </tr>
-                <tr>
-                    <th><h1><i class="wi ${iconClass}"></i></h1></th>
-                    <th><h1 style="color: orange;"><i class="wi wi-thermometer"></i>${temp}<i class="wi wi-degrees"></i></h1></th>
-                </tr>
-                <tr>
-                    <td><p>ressenti ${app_temp}°C</p></td>
-                </tr>
-                <tr>
-                    <td><p>${rel_hum}<i class="wi wi-humidity"></i></p></td>
-                    <td><p>${precipitation} mm</p></td>
-                    <td><p>${p_surface}<i class="wi wi-barometer"></i></p></td>
-                </tr>
-                <tr>
-                    <td><p>Max : ${todayMax}°C</p></td>
-                    <td><p>Min : ${todayMin}°C</p></td>
-                </tr>
-            </table>
+            <div class="mf-header">
+                <div class="mf-logo-badge">MF</div>
+                <div class="mf-logo-text">MÉTÉO FRANCE</div>
+            </div>
+ 
+            <div class="mf-main">
+                <div class="mf-icon"><i class="wi ${iconClass}"></i></div>
+                <div class="mf-temp-block">
+                    <div class="mf-temp">${temp.toFixed(1)}°C</div>
+                    <div class="mf-feels">RESSENTI ${app_temp.toFixed(1)}°C</div>
+                </div>
+                <div class="mf-right">
+                    <span class="mf-ic"><i class="wi wi-strong-wind"></i></span>
+                    <span class="mf-val">${wind_speed_10m} km/h</span>
+                    <span class="mf-ic"><i class="wi wi-direction-up-right"></i></span>
+                    <span class="mf-val">${wind_direction_10m}°</span>
+                    <span class="mf-ic"><i class="wi wi-sunrise"></i></span>
+                    <span class="mf-val">${sunrise.split("T")[1]}</span>
+                    <span class="mf-ic"><i class="wi wi-sunset"></i></span>
+                    <span class="mf-val">${sunset.split("T")[1]}</span>
+                </div>
+            </div>
+ 
+            <div class="mf-stats">
+                <div class="mf-stat">
+                    <div class="mf-stat-label">Humidité</div>
+                    <div class="mf-stat-val"><i class="wi wi-humidity"></i> ${rel_hum} %</div>
+                </div>
+                <div class="mf-stat">
+                    <div class="mf-stat-label">Précipitations</div>
+                    <div class="mf-stat-val"><i class="wi wi-rain"></i> ${precipitation} mm</div>
+                </div>
+                <div class="mf-stat">
+                    <div class="mf-stat-label">Pression</div>
+                    <div class="mf-stat-val mf-blue"><i class="wi wi-barometer"></i> ${p_surface.toFixed(0)} hPa</div>
+                </div>
+            </div>
         `;
-
-        const tbody = document.querySelector("#forecastTable tbody");
+ 
+        // --- Prévisions : on filtre les jours avec null ---
         const rows = [];
-
+ 
         for (let i = 0; i < 5; i++) {
-            const date = data.daily.time[i];
+ 
+            const date   = data.daily.time[i];
             const dayMax = data.daily.temperature_2m_max[i];
             const dayMin = data.daily.temperature_2m_min[i];
-            const code = data.daily.weather_code[i];
+            const code   = data.daily.weather_code[i];
+ 
+            if (dayMax === null || dayMin === null || code === null) continue;
+ 
+            const d = new Date(date + "T12:00:00");
+            const dayLabel = d.toLocaleDateString("fr-FR", {
+                weekday: "short",
+                day:     "2-digit",
+                month:   "2-digit"
+            }).toUpperCase();
+ 
             const icon = getWeatherIcon(code);
-
+ 
             rows.push(`
-                <tr>
-                    <td>${date}</td>
-                    <td><i class="wi ${icon}"></i></td>
-                    <td>${dayMin}°C</td>
-                    <td>${dayMax}°C</td>
-                </tr>
+                <div class="mf-day">
+                    <div class="mf-day-label">${dayLabel}</div>
+                    <div class="mf-day-icon"><i class="wi ${icon}"></i></div>
+                    <div class="mf-day-max">${dayMax.toFixed(1)}°</div>
+                    <div class="mf-day-min">${dayMin.toFixed(1)}°</div>
+                </div>
             `);
         }
-
-        tbody.innerHTML = rows.join('');
-
+ 
+        document.getElementById("forecastContainer").innerHTML = rows.join('');
+ 
     } catch (error) {
         console.error("Erreur météo Open-Meteo :", error);
     }
 }
+
 
 // ==============================
 // Compas SVG style aéro
