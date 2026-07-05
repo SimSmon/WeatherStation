@@ -225,6 +225,59 @@ async function loadWeatherFM() {
     }
 }
 
+async function loadWeatherMetar() {
+    try {
+        const url =
+            "https://aviationweather.gov/api/data/" +
+            "metar?" +
+            "ids=LFRN&" +
+            "format=json";
+
+        const response = await fetch("/api/metar");        
+        const data = await response.json();
+
+        const data = json[0];
+
+        const time = data.reportTime;
+        const temp = data.temp; 
+        const dewp = data.dewp;
+        const wdir = data.wdir;
+        const wspd = data.wspd;
+        const visib = data.visib;
+        const altPress = data.altim;
+        const cover = data.cover;
+
+        //const qcFieldClass = getqcField(qcField);
+
+        document.getElementById("metar").innerHTML = `
+            <table>
+                <tr>
+                    <td><p>${time}</p></td>
+                </tr>
+                <tr>
+                    <td><p><i class="wi wi-strong-wind"></i>${wspd}Kts</p></td>
+                    <td><p><i class="wi wi-direction-up-right"></i>${wdir}°</p></td>
+                </tr>
+                <tr>
+                    <th><h1><i class="wi ${iconClass}"></i></h1></th>
+                    <th><h1><i class="wi wi-thermometer"></i>${temp}<i class="wi wi-degrees"></i></h1></th>
+                </tr>
+                <tr>
+                    <td><p>${dewp}<i class="wi wi-humidity"></i></p></td>
+                    <td><p>${altPress}<i class="wi wi-barometer"></i></p></td>
+                </tr>
+                <tr>
+                    <td><p>Max : ${cover}</p></td>
+                    <td><p>Max : ${visib}</p></td>
+                </tr>
+            </table>
+        `;
+
+    } catch (error) {
+        console.error("Erreur météo Open-Meteo :", error);
+    }
+}
+
 // ==============================
 // Démarrage + boucles de rafraîchissement
 // ==============================
@@ -232,9 +285,11 @@ async function loadWeatherFM() {
 startTime();
 loadWeather();    // Sondes locales ESP32
 loadWeatherFM();  // API Open-Meteo
+loadWeatherMetar();
 
 // Sondes ESP32 toutes les 2 minutes
 setInterval(loadWeather, 120000);
 
 // Open-Meteo toutes les 15 minutes
 setInterval(loadWeatherFM, 900000);
+setInterval(loadWeatherMetar, 900000);
