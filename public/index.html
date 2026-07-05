@@ -11,31 +11,44 @@
 </head>
 <body>
 
-    <div id="time"></div>
+    <nav class="tabs-nav">
+        <button class="tab-btn active" onclick="switchTab(event, 'live')">🔴 En Direct</button>
+        <button class="tab-btn" onclick="switchTab(event, 'charts')">📊 Historique</button>
+        <!-- <button class="tab-btn" onclick="switchTab(event, 'config')">⚙️ Configuration</button> -->
+    </nav>
 
-    <div class="section">
-        <div id="sondes" class="cards"></div>
+    <div id="tab-live" class="tab-content">
+        <div id="time"></div>
+
+        <div class="section">
+            <div id="sondes" class="cards"></div>
+        </div>
+
+
+        <table>
+            <tr>
+                <td>
+                    <div id="weatherCard" class="card mf-card">
+                        <div id="weather">Chargement météo...</div>
+                        <div id="forecastContainer" class="mf-forecast"></div>
+                    </div>
+                </td>
+                <td>
+                    <div id="metarCard" class="card">
+                        <div id="metar">
+                            Chargement metar...
+                        </div>
+                    </div>
+                </td>
+            </tr>
+
+        </table>
     </div>
 
-
-    <table>
-        <tr>
-            <td>
-                <div id="weatherCard" class="card mf-card">
-                    <div id="weather">Chargement météo...</div>
-                    <div id="forecastContainer" class="mf-forecast"></div>
-                </div>
-            </td>
-            <td>
-                <div id="metarCard" class="card">
-                    <div id="metar">
-                        Chargement metar...
-                    </div>
-                </div>
-            </td>
-        </tr>
-
-    </table>
+    <div id="tab-charts" class="tab-content hidden">
+        <h2>Évolution sur les dernières 24 heures</h2>
+        <p>Graphiques des relevés stockés en base de données.</p>
+    </div>
 
     <script src="script.js"></script>
 
