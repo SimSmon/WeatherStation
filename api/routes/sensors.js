@@ -12,12 +12,15 @@ router.get("/sensors", async (req, res) => {
                 s.sensor_id,
                 s.name,
                 s.location,
+                s.firmware,
                 m.temperature,
                 m.humidity,
                 m.pressure,
                 m.wind_speed,
+                m.wind_direction,
                 m.luminosity,
                 m.battery,
+                m.wifi_rssi,
                 m.created_at
             FROM sensors s
             LEFT JOIN measurements m

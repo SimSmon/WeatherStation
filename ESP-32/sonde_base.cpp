@@ -8,7 +8,7 @@
 // ATTENTION : change ce mot de passe sur ta Freebox, il a été exposé.
 // Idéalement, mets ssid/password dans un fichier séparé (config.h) exclu du repo.
 const char* ssid = "Freebox-7721D6";
-const char* password = "m92wbq4246qfvdfrqr4c5n";
+const char* password = "code_wifi";
 
 // --- Configuration API ---
 const char* serverUrl = "http://192.168.1.76:3001/api/weather";
