@@ -102,44 +102,31 @@ past AS (
         m.humidity,
         m.pressure
     FROM measurements m
-    ORDER BY m.sensor_id,
-             ABS(EXTRACT(EPOCH FROM (m.created_at - (NOW() - INTERVAL '1 hour'))))
+    WHERE m.created_at >= (NOW() - INTERVAL '1 hour' - INTERVAL '5 minutes')
+      AND m.created_at <= (NOW() - INTERVAL '1 hour' + INTERVAL '5 minutes')
+    ORDER BY m.sensor_id, m.created_at DESC
 ),
 
 per_sensor AS (
     SELECT
         l.sensor_id,
         l.type,
-
         l.temperature AS temp_now,
         p.temperature AS temp_1h,
-
         l.humidity AS hum_now,
         p.humidity AS hum_1h,
-
         l.pressure AS pres_now,
         p.pressure AS pres_1h
-
     FROM latest l
     LEFT JOIN past p ON p.sensor_id = l.sensor_id
 )
 
 SELECT
     type,
-
     AVG(temp_now) AS temp_now,
-    AVG(temp_1h)  AS temp_1h,
-    AVG(temp_now - temp_1h) AS temp_trend,
-
-    AVG(hum_now) AS humidity_now,
-    AVG(hum_1h)  AS humidity_1h,
-    AVG(hum_now - hum_1h) AS humidity_trend,
-
-    AVG(pres_now) AS pressure_now,
-    AVG(pres_1h)  AS pressure_1h,
-    AVG(pres_now - pres_1h) AS pressure_trend
-
-FROM *
+    AVG(temp_1h) AS temp_1h,
+    AVG(temp_now - temp_1h) AS temp_trend
+FROM per_sensor
 GROUP BY type;
         `);
 
