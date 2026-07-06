@@ -83,52 +83,64 @@ router.get("/trend", async (req, res) => {
     try {
 
         const result = await pool.query(`
-            WITH latest AS (
-                SELECT DISTINCT ON (m.sensor_id)
-                    m.sensor_id,
-                    s.type,
-                    m.temperature,
-                    m.humidity,
-                    m.pressure
-                FROM measurements m
-                JOIN sensors s ON s.sensor_id = m.sensor_id
-                ORDER BY m.sensor_id, m.created_at DESC
-            ),
+WITH latest AS (
+    SELECT DISTINCT ON (m.sensor_id)
+        m.sensor_id,
+        s.type,
+        m.temperature,
+        m.humidity,
+        m.pressure
+    FROM measurements m
+    JOIN sensors s ON s.sensor_id = m.sensor_id
+    ORDER BY m.sensor_id, m.created_at DESC
+),
 
-            past AS (
-                SELECT DISTINCT ON (m.sensor_id)
-                    m.sensor_id,
-                    s.type,
-                    m.temperature,
-                    m.humidity,
-                    m.pressure
-                FROM measurements m
-                JOIN sensors s ON s.sensor_id = m.sensor_id
-                ORDER BY m.sensor_id,
-                        ABS(EXTRACT(EPOCH FROM (m.created_at - (NOW() - INTERVAL '1 hour'))))
-            )
+past AS (
+    SELECT DISTINCT ON (m.sensor_id)
+        m.sensor_id,
+        m.temperature,
+        m.humidity,
+        m.pressure
+    FROM measurements m
+    ORDER BY m.sensor_id,
+             ABS(EXTRACT(EPOCH FROM (m.created_at - (NOW() - INTERVAL '1 hour'))))
+),
 
-            SELECT
-                l.type,
+per_sensor AS (
+    SELECT
+        l.sensor_id,
+        l.type,
 
-                AVG(l.temperature) AS temp_now,
-                AVG(p.temperature) AS temp_1h,
+        l.temperature AS temp_now,
+        p.temperature AS temp_1h,
 
-                AVG(l.temperature - p.temperature) AS temp_trend,
+        l.humidity AS hum_now,
+        p.humidity AS hum_1h,
 
-                AVG(l.humidity) AS humidity_now,
-                AVG(p.humidity) AS humidity_1h,
+        l.pressure AS pres_now,
+        p.pressure AS pres_1h
 
-                AVG(l.humidity - p.humidity) AS humidity_trend,
+    FROM latest l
+    LEFT JOIN past p ON p.sensor_id = l.sensor_id
+)
 
-                AVG(l.pressure) AS pressure_now,
-                AVG(p.pressure) AS pressure_1h,
+SELECT
+    type,
 
-                AVG(l.pressure - p.pressure) AS pressure_trend
+    AVG(temp_now) AS temp_now,
+    AVG(temp_1h)  AS temp_1h,
+    AVG(temp_now - temp_1h) AS temp_trend,
 
-            FROM latest l
-            JOIN past p ON p.sensor_id = l.sensor_id
-            GROUP BY l.type;
+    AVG(hum_now) AS humidity_now,
+    AVG(hum_1h)  AS humidity_1h,
+    AVG(hum_now - hum_1h) AS humidity_trend,
+
+    AVG(pres_now) AS pressure_now,
+    AVG(pres_1h)  AS pressure_1h,
+    AVG(pres_now - pres_1h) AS pressure_trend
+
+FROM per_sensor
+GROUP BY type;
         `);
 
         if (result.rows.length === 0) {
