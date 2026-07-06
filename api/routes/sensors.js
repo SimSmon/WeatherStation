@@ -139,7 +139,7 @@ SELECT
     AVG(pres_1h)  AS pressure_1h,
     AVG(pres_now - pres_1h) AS pressure_trend
 
-FROM per_sensor
+FROM *
 GROUP BY type;
         `);
 
