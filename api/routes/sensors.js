@@ -133,11 +133,12 @@ router.get("/trend/outdoor", async (req, res) => {
     } catch (err) {
 
         console.error(err);
+
         res.status(500).json({
-            error: "Erreur serveur"
+            error: err.message
         });
 
-    }
+}
 
 });
 
