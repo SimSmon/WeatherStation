@@ -360,7 +360,7 @@ async function loadWeatherMetar() {
 
     try {
 
-        const response = await fetch("/api/metar");
+        const response = await fetch("/api/aviation");
         const json = await response.json();
         const data = json[0];
 
@@ -473,6 +473,95 @@ async function loadWeatherMetar() {
       }
     }
 
+    async function loadTrends() {
+
+    try {
+
+        const response = await fetch("/api/trend");
+        const trends = await response.json();
+
+        const indoor = trends.find(t => t.type === "indoor") || {};
+        const outdoor = trends.find(t => t.type === "outdoor") || {};
+
+
+        document.getElementById("trend").innerHTML = `
+
+        <div class="trendCard">
+
+            <h3>🌳 Extérieur</h3>
+
+            <p>
+                🌡 Température :
+                ${trend(outdoor.temperature_trend,"°C")}
+            </p>
+
+            <p>
+                💧 Humidité :
+                ${trend(outdoor.humidity_trend,"%")}
+            </p>
+
+            <p>
+                🧭 Pression :
+                ${trend(outdoor.pressure_trend," hPa")}
+            </p>
+
+        </div>
+
+        <div class="trendCard">
+
+            <h3>🏠 Intérieur</h3>
+
+            <p>
+                🌡 Température :
+                ${trend(indoor.temperature_trend,"°C")}
+            </p>
+
+            <p>
+                💧 Humidité :
+                ${trend(indoor.humidity_trend,"%")}
+            </p>
+
+            <p>
+                🧭 Pression :
+                ${trend(indoor.pressure_trend," hPa")}
+            </p>
+
+        </div>
+
+        `;    } catch(err) {
+
+        console.error("Erreur tendances :", err);
+
+    }
+
+}
+
+function trend(value, unit = "") {
+
+    if (value == null)
+        return `<span class="trendNeutral">--</span>`;
+
+    if (value > 0)
+        return `<span class="trendUp">
+            <i class="bi bi-arrow-up-right"></i>
+            +${value}${unit}
+        </span>`;
+
+    if (value < 0)
+        return `<span class="trendDown">
+            <i class="bi bi-arrow-down-right"></i>
+            ${value}${unit}
+        </span>`;
+
+    return `<span class="trendFlat">
+        <i class="bi bi-dash"></i>
+        0${unit}
+    </span>`;
+
+}
+
+
+
 // ==============================
 // Démarrage + boucles de rafraîchissement
 // ==============================
@@ -481,6 +570,7 @@ startTime();
 loadWeather();    // Sondes locales ESP32
 loadWeatherFM();  // API Open-Meteo
 loadWeatherMetar();
+loadTrends();
 
 // Sondes ESP32 toutes les 2 minutes
 setInterval(loadWeather, 120000);
@@ -488,3 +578,4 @@ setInterval(loadWeather, 120000);
 // Open-Meteo toutes les 15 minutes
 setInterval(loadWeatherFM, 900000);
 setInterval(loadWeatherMetar, 900000);
+setInterval(loadTrends, 900000);
