@@ -89,12 +89,10 @@ router.get("/trend", async (req, res) => {
                     s.type,
                     m.temperature,
                     m.humidity,
-                    m.pressure,
-                    m.created_at
+                    m.pressure
                 FROM measurements m
                 JOIN sensors s ON s.sensor_id = m.sensor_id
                 ORDER BY m.sensor_id, m.created_at DESC
-
             ),
 
             past AS (
@@ -103,13 +101,11 @@ router.get("/trend", async (req, res) => {
                     s.type,
                     m.temperature,
                     m.humidity,
-                    m.pressure,
-                    m.created_at
+                    m.pressure
                 FROM measurements m
                 JOIN sensors s ON s.sensor_id = m.sensor_id
-                ORDER BY
-                    m.sensor_id,
-                    ABS(EXTRACT(EPOCH FROM (m.created_at - (NOW() - INTERVAL '1 hour'))))
+                ORDER BY m.sensor_id,
+                        ABS(EXTRACT(EPOCH FROM (m.created_at - (NOW() - INTERVAL '1 hour'))))
             )
 
             SELECT
@@ -118,9 +114,17 @@ router.get("/trend", async (req, res) => {
                 AVG(l.temperature) AS temp_now,
                 AVG(p.temperature) AS temp_1h,
 
-                ROUND(AVG(l.temperature - p.temperature)::numeric, 1) AS trend_temp,
-                ROUND(AVG(l.humidity - p.humidity)::numeric, 0)       AS trend_humidity,
-                ROUND(AVG(l.pressure - p.pressure)::numeric, 1)       AS trend_pressure
+                AVG(l.temperature - p.temperature) AS temp_trend,
+
+                AVG(l.humidity) AS humidity_now,
+                AVG(p.humidity) AS humidity_1h,
+
+                AVG(l.humidity - p.humidity) AS humidity_trend,
+
+                AVG(l.pressure) AS pressure_now,
+                AVG(p.pressure) AS pressure_1h,
+
+                AVG(l.pressure - p.pressure) AS pressure_trend
 
             FROM latest l
             JOIN past p ON p.sensor_id = l.sensor_id
