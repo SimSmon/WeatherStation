@@ -160,7 +160,7 @@ ORDER BY type;
 
         }
 
-        res.json(result.rows[0]);
+        res.json(result.rows);
 
     } catch (err) {
 
