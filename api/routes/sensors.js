@@ -137,9 +137,9 @@ router.get("/trend", async (req, res) => {
                 ROUND((c.humidity-o.humidity)::numeric,0)       AS humidity_trend,
                 ROUND((c.pressure-o.pressure)::numeric,1)       AS pressure_trend
 
-            FROM current c
-            JOIN old o
-            ON c.type=o.type;
+            FROM (SELECT DISTINCT type FROM sensors) t
+            LEFT JOIN current c ON c.type = t.type
+            LEFT JOIN old o ON o.type = t.type
         `);
 
         if (result.rows.length === 0) {
