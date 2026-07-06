@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-app.get("/aviation", async (req, res) => {
+router.get("/aviation", async (req, res) => {
 
     try {
 
@@ -24,3 +24,5 @@ app.get("/aviation", async (req, res) => {
     }
 
 });
+
+module.exports = router;
