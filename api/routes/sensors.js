@@ -78,46 +78,68 @@ router.get("/latest", async (req, res) => {
 
 //moyenne ext
 
-router.get("/trend/outdoor", async (req, res) => {
+router.get("/trend", async (req, res) => {
 
     try {
 
         const result = await pool.query(`
-            WITH current_avg AS (
+            WITH current AS (
 
-                SELECT AVG(m.temperature) AS temp
+                SELECT
+
+                    s.type,
+
+                    ROUND(AVG(m.temperature)::numeric,1) AS temperature,
+                    ROUND(AVG(m.humidity)::numeric,0)    AS humidity,
+                    ROUND(AVG(m.pressure)::numeric,1)    AS pressure
 
                 FROM measurements m
                 JOIN sensors s
                     ON s.sensor_id = m.sensor_id
 
-                WHERE s.type = 'outdoor'
+                WHERE m.created_at >= NOW() - INTERVAL '5 minutes'
+
+                GROUP BY s.type
 
             ),
 
-            old_avg AS (
+            old AS (
 
-                SELECT AVG(m.temperature) AS temp
+                SELECT
+
+                    s.type,
+
+                    ROUND(AVG(m.temperature)::numeric,1) AS temperature,
+                    ROUND(AVG(m.humidity)::numeric,0)    AS humidity,
+                    ROUND(AVG(m.pressure)::numeric,1)    AS pressure
 
                 FROM measurements m
                 JOIN sensors s
                     ON s.sensor_id = m.sensor_id
 
-                WHERE s.type = 'outdoor'
-                AND m.created_at <= NOW() - INTERVAL '1 hour'
-                AND m.created_at >= NOW() - INTERVAL '1 hour 5 minutes'
+                WHERE m.created_at
+                    BETWEEN NOW() - INTERVAL '1 hour 5 minutes'
+                        AND NOW() - INTERVAL '55 minutes'
+
+                GROUP BY s.type
 
             )
 
             SELECT
 
-                current_avg.temp AS current,
+                c.type,
 
-                old_avg.temp AS one_hour_ago,
+                c.temperature,
+                c.humidity,
+                c.pressure,
 
-                ROUND(current_avg.temp - old_avg.temp,1) AS trend
+                ROUND((c.temperature-o.temperature)::numeric,1) AS temperature_trend,
+                ROUND((c.humidity-o.humidity)::numeric,0)       AS humidity_trend,
+                ROUND((c.pressure-o.pressure)::numeric,1)       AS pressure_trend
 
-            FROM current_avg, old_avg;
+            FROM current c
+            JOIN old o
+            ON c.type=o.type;
         `);
 
         if (result.rows.length === 0) {
