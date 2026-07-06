@@ -423,3 +423,17 @@ body {
     .hidden {
       display: none !important;
     }
+
+    .trendUp{
+    color:#4CAF50;
+    font-weight:bold;
+}
+
+.trendDown{
+    color:#ff5252;
+    font-weight:bold;
+}
+
+.trendFlat{
+    color:#bdbdbd;
+}
