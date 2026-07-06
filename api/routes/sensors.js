@@ -86,32 +86,70 @@ router.get("/trend", async (req, res) => {
 WITH ref AS (
     SELECT MAX(created_at) AS t_ref
     FROM measurements
+),
+
+per_sensor AS (
+    SELECT
+        s.sensor_id,
+        s.type,
+
+        cur.temperature AS temp_now,
+        old.temperature AS temp_1h,
+
+        cur.humidity AS hum_now,
+        old.humidity AS hum_1h,
+
+        cur.pressure AS pres_now,
+        old.pressure AS pres_1h
+
+    FROM sensors s
+    CROSS JOIN ref
+
+    LEFT JOIN LATERAL (
+        SELECT
+            temperature,
+            humidity,
+            pressure
+        FROM measurements m
+        WHERE m.sensor_id = s.sensor_id
+        ORDER BY created_at DESC
+        LIMIT 1
+    ) cur ON TRUE
+
+    LEFT JOIN LATERAL (
+        SELECT
+            temperature,
+            humidity,
+            pressure
+        FROM measurements m
+        WHERE m.sensor_id = s.sensor_id
+        ORDER BY ABS(
+            EXTRACT(EPOCH FROM (
+                m.created_at - (ref.t_ref - INTERVAL '1 hour')
+            ))
+        )
+        LIMIT 1
+    ) old ON TRUE
 )
+
 SELECT
-    s.sensor_id,
-    s.type,
-    cur.temperature AS temp_now,
-    old.temperature AS temp_1h
-FROM sensors s
-CROSS JOIN ref
+    type,
 
-LEFT JOIN LATERAL (
-    SELECT temperature, humidity, pressure, created_at
-    FROM measurements m
-    WHERE m.sensor_id = s.sensor_id
-    ORDER BY created_at DESC
-    LIMIT 1
-) cur ON TRUE
+    ROUND(AVG(temp_now)::numeric, 1) AS temperature,
+    ROUND(AVG(temp_1h)::numeric, 1) AS temperature_1h,
+    ROUND(AVG(temp_now - temp_1h)::numeric, 1) AS temperature_trend,
 
-LEFT JOIN LATERAL (
-    SELECT temperature, humidity, pressure, created_at
-    FROM measurements m
-    WHERE m.sensor_id = s.sensor_id
-    ORDER BY ABS(EXTRACT(EPOCH FROM (
-        m.created_at - (ref.t_ref - INTERVAL '1 hour')
-    )))
-    LIMIT 1
-) old ON TRUE;
+    ROUND(AVG(hum_now)::numeric, 0) AS humidity,
+    ROUND(AVG(hum_1h)::numeric, 0) AS humidity_1h,
+    ROUND(AVG(hum_now - hum_1h)::numeric, 0) AS humidity_trend,
+
+    ROUND(AVG(pres_now)::numeric, 1) AS pressure,
+    ROUND(AVG(pres_1h)::numeric, 1) AS pressure_1h,
+    ROUND(AVG(pres_now - pres_1h)::numeric, 1) AS pressure_trend
+
+FROM per_sensor
+GROUP BY type
+ORDER BY type;
         `);
 
         if (result.rows.length === 0) {
