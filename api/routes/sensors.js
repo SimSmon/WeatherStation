@@ -83,63 +83,48 @@ router.get("/trend", async (req, res) => {
     try {
 
         const result = await pool.query(`
-            WITH current AS (
-
-                SELECT
-
+            WITH latest AS (
+                SELECT DISTINCT ON (m.sensor_id)
+                    m.sensor_id,
                     s.type,
-
-                    ROUND(AVG(m.temperature)::numeric,1) AS temperature,
-                    ROUND(AVG(m.humidity)::numeric,0)    AS humidity,
-                    ROUND(AVG(m.pressure)::numeric,1)    AS pressure
-
+                    m.temperature,
+                    m.humidity,
+                    m.pressure,
+                    m.created_at
                 FROM measurements m
-                JOIN sensors s
-                    ON s.sensor_id = m.sensor_id
-
-                WHERE m.created_at >= NOW() - INTERVAL '5 minutes'
-
-                GROUP BY s.type
+                JOIN sensors s ON s.sensor_id = m.sensor_id
+                ORDER BY m.sensor_id, m.created_at DESC
 
             ),
 
-            old AS (
-
-                SELECT
-
+            past AS (
+                SELECT DISTINCT ON (m.sensor_id)
+                    m.sensor_id,
                     s.type,
-
-                    ROUND(AVG(m.temperature)::numeric,1) AS temperature,
-                    ROUND(AVG(m.humidity)::numeric,0)    AS humidity,
-                    ROUND(AVG(m.pressure)::numeric,1)    AS pressure
-
+                    m.temperature,
+                    m.humidity,
+                    m.pressure,
+                    m.created_at
                 FROM measurements m
-                JOIN sensors s
-                    ON s.sensor_id = m.sensor_id
-
-                WHERE m.created_at
-                    BETWEEN NOW() - INTERVAL '1 hour 5 minutes'
-                        AND NOW() - INTERVAL '55 minutes'
-
-                GROUP BY s.type
-
+                JOIN sensors s ON s.sensor_id = m.sensor_id
+                ORDER BY
+                    m.sensor_id,
+                    ABS(EXTRACT(EPOCH FROM (m.created_at - (NOW() - INTERVAL '1 hour'))))
             )
 
             SELECT
+                l.type,
 
-                c.type,
+                AVG(l.temperature) AS temp_now,
+                AVG(p.temperature) AS temp_1h,
 
-                c.temperature,
-                c.humidity,
-                c.pressure,
+                ROUND(AVG(l.temperature - p.temperature)::numeric, 1) AS trend_temp,
+                ROUND(AVG(l.humidity - p.humidity)::numeric, 0)       AS trend_humidity,
+                ROUND(AVG(l.pressure - p.pressure)::numeric, 1)       AS trend_pressure
 
-                ROUND((c.temperature-o.temperature)::numeric,1) AS temperature_trend,
-                ROUND((c.humidity-o.humidity)::numeric,0)       AS humidity_trend,
-                ROUND((c.pressure-o.pressure)::numeric,1)       AS pressure_trend
-
-            FROM (SELECT DISTINCT type FROM sensors) t
-            LEFT JOIN current c ON c.type = t.type
-            LEFT JOIN old o ON o.type = t.type
+            FROM latest l
+            JOIN past p ON p.sensor_id = l.sensor_id
+            GROUP BY l.type;
         `);
 
         if (result.rows.length === 0) {
