@@ -83,51 +83,35 @@ router.get("/trend", async (req, res) => {
     try {
 
         const result = await pool.query(`
-WITH latest AS (
-    SELECT DISTINCT ON (m.sensor_id)
-        m.sensor_id,
-        s.type,
-        m.temperature,
-        m.humidity,
-        m.pressure
-    FROM measurements m
-    JOIN sensors s ON s.sensor_id = m.sensor_id
-    ORDER BY m.sensor_id, m.created_at DESC
-),
-
-past AS (
-    SELECT DISTINCT ON (m.sensor_id)
-        m.sensor_id,
-        m.temperature,
-        m.humidity,
-        m.pressure
-    FROM measurements m
-    WHERE m.created_at >= (NOW() - INTERVAL '1 hour' - INTERVAL '5 minutes')
-      AND m.created_at <= (NOW() - INTERVAL '1 hour' + INTERVAL '5 minutes')
-    ORDER BY m.sensor_id, m.created_at DESC
-),
-
-per_sensor AS (
-    SELECT
-        l.sensor_id,
-        l.type,
-        l.temperature AS temp_now,
-        p.temperature AS temp_1h,
-        l.humidity AS hum_now,
-        p.humidity AS hum_1h,
-        l.pressure AS pres_now,
-        p.pressure AS pres_1h
-    FROM latest l
-    LEFT JOIN past p ON p.sensor_id = l.sensor_id
+WITH ref AS (
+    SELECT MAX(created_at) AS t_ref
+    FROM measurements
 )
-
 SELECT
-    type,
-    AVG(temp_now) AS temp_now,
-    AVG(temp_1h) AS temp_1h,
-    AVG(temp_now - temp_1h) AS temp_trend
-FROM per_sensor
-GROUP BY type;
+    s.sensor_id,
+    s.type,
+    cur.temperature AS temp_now,
+    old.temperature AS temp_1h
+FROM sensors s
+CROSS JOIN ref
+
+LEFT JOIN LATERAL (
+    SELECT temperature, humidity, pressure, created_at
+    FROM measurements m
+    WHERE m.sensor_id = s.sensor_id
+    ORDER BY created_at DESC
+    LIMIT 1
+) cur ON TRUE
+
+LEFT JOIN LATERAL (
+    SELECT temperature, humidity, pressure, created_at
+    FROM measurements m
+    WHERE m.sensor_id = s.sensor_id
+    ORDER BY ABS(EXTRACT(EPOCH FROM (
+        m.created_at - (ref.t_ref - INTERVAL '1 hour')
+    )))
+    LIMIT 1
+) old ON TRUE;
         `);
 
         if (result.rows.length === 0) {
