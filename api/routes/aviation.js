@@ -24,3 +24,5 @@ app.get("/aviation", async (req, res) => {
     }
 
 });
+
+module.exports = router;
