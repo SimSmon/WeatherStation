@@ -7,6 +7,7 @@ const path = require("path");
 const pool = require("./db");
 const sensorsRoutes = require("./routes/sensors");
 const weatherRoutes = require("./routes/weather");
+const aviationRoutes = require("./routes/aviation");
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.get("/", (req, res) => {
 
 app.use("/api", sensorsRoutes);
 app.use("/api", weatherRoutes);
+app.use("/api", aviationRoutes);
 
 // ==============================
 // Démarrage
@@ -51,28 +53,4 @@ process.on("SIGTERM", () => {
             process.exit(0);
         });
     });
-});
-
-app.get("/api/metar", async (req, res) => {
-
-    try {
-
-        const response = await fetch(
-            "https://aviationweather.gov/api/data/metar?ids=LFRN&format=json"
-        );
-
-        const data = await response.json();
-
-        res.json(data);
-
-    } catch(err){
-
-        console.error(err);
-
-        res.status(500).json({
-            error: "Impossible de récupérer le METAR"
-        });
-
-    }
-
 });
