@@ -83,45 +83,39 @@ router.get("/trend", async (req, res) => {
     try {
 
         const result = await pool.query(`
-            WITH current_data AS (
-                SELECT
-                    m.sensor_id,
-                    s.name,
-                    s.location,
-                    s.type,
-                    ROUND(AVG(m.temperature)::numeric, 1) AS temperature,
-                    ROUND(AVG(m.humidity)::numeric, 0)    AS humidity,
-                    ROUND(AVG(m.pressure)::numeric, 1)    AS pressure
-                FROM measurements m
-                JOIN sensors s ON s.sensor_id = m.sensor_id
-                WHERE m.created_at >= NOW() - INTERVAL '5 minutes'
-                GROUP BY m.sensor_id, s.name, s.location, s.type
-            ),
-            old_data AS (
-                SELECT
-                    m.sensor_id,
-                    ROUND(AVG(m.temperature)::numeric, 1) AS temperature,
-                    ROUND(AVG(m.humidity)::numeric, 0)    AS humidity,
-                    ROUND(AVG(m.pressure)::numeric, 1)    AS pressure
-                FROM measurements m
-                WHERE m.created_at BETWEEN NOW() - INTERVAL '1 hour 5 minutes' 
-                                    AND NOW() - INTERVAL '55 minutes'
-                GROUP BY m.sensor_id
-            )
-            SELECT
-                c.sensor_id,
-                c.name,
-                c.location,
-                c.type,
-                c.temperature,
-                c.humidity,
-                c.pressure,
-                -- Le COALESCE permet d'afficher 0.0 si la sonde n'existait pas il y a 1h, évitant les bugs d'affichage
-                ROUND((c.temperature - COALESCE(o.temperature, c.temperature))::numeric, 1) AS temperature_trend,
-                ROUND((c.humidity - COALESCE(o.humidity, c.humidity))::numeric, 0)       AS humidity_trend,
-                ROUND((c.pressure - COALESCE(o.pressure, c.pressure))::numeric, 1)       AS pressure_trend
-            FROM current_data c
-            LEFT JOIN old_data o ON c.sensor_id = o.sensor_id; -- <--- LEFT JOIN sur l'identifiant UNIQUE
+WITH current_zones AS (
+    SELECT
+        s.location AS zone_type, -- Regroupe par 'indoor' / 'outdoor'
+        ROUND(AVG(m.temperature)::numeric, 1) AS temperature,
+        ROUND(AVG(m.humidity)::numeric, 0)    AS humidity,
+        ROUND(AVG(m.pressure)::numeric, 1)    AS pressure
+    FROM measurements m
+    JOIN sensors s ON s.sensor_id = m.sensor_id
+    WHERE m.created_at >= NOW() - INTERVAL '5 minutes'
+    GROUP BY s.location
+),
+old_zones AS (
+    SELECT
+        s.location AS zone_type,
+        ROUND(AVG(m.temperature)::numeric, 1) AS temperature,
+        ROUND(AVG(m.humidity)::numeric, 0)    AS humidity,
+        ROUND(AVG(m.pressure)::numeric, 1)    AS pressure
+    FROM measurements m
+    JOIN sensors s ON s.sensor_id = m.sensor_id
+    WHERE m.created_at BETWEEN NOW() - INTERVAL '1 hour 5 minutes' AND NOW() - INTERVAL '55 minutes'
+    GROUP BY s.location
+)
+SELECT
+    c.zone_type,
+    c.temperature,
+    c.humidity,
+    c.pressure,
+    -- Utilisation de COALESCE pour que si la zone n'existait pas il y a 1h, la tendance affiche 0 au lieu de faire disparaître la ligne
+    ROUND((c.temperature - COALESCE(o.temperature, c.temperature))::numeric, 1) AS temperature_trend,
+    ROUND((c.humidity - COALESCE(o.humidity, c.humidity))::numeric, 0)       AS humidity_trend,
+    ROUND((c.pressure - COALESCE(o.pressure, c.pressure))::numeric, 1)       AS pressure_trend
+FROM current_zones c
+LEFT JOIN old_zones o ON c.zone_type = o.zone_type;
         `);
 
         if (result.rows.length === 0) {
