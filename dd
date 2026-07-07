@@ -37,7 +37,7 @@
             <div id="sondes" class="cards"></div>
     </div>
 
-    <div class="section cards">
+    <div class="section">
         <div class="card">
             <div class="sectionTitle flex-between">
                 <h2 class="sectionTitle mf-header flex-between">

@@ -12,15 +12,15 @@ async function loadWeather() {
         sondes.forEach(sonde => {
             const wifi = getWifiIcon(sonde.wifi_rssi);
             const cardHTML = `
-                <div class="card">
-                    <div class="card-header">
+                <div class="subPanel grid grid-auto">
+                    <div class="sectionTitle">
                         <h3><i class="bi ${wifi.icon} wifi-icon" title="${wifi.label} (${sonde.wifi_rssi ?? "?"} dBm)">${sonde.name}</i></h3> 
                     </div>
                      
-                    <h1 style="color: orange;">🌡️ ${sonde.temperature ?? "--"} °C</h1>
-                    <p><i class="wi wi-drop"></i>${sonde.humidity ?? "--"} %</p>
-                    ${sonde.pressure != null ? `<p><i class="wi wi-barometer"></i> ${sonde.pressure} hPa</p>` : "" }      
-                    ${sonde.created_at ? `<p><i class="wi wi-time-3"></i> ${new Date(sonde.created_at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}</p>` : "" }            
+                    <h1><i class="wi wi-thermometer icon icon-lg"></i> ${sonde.temperature ?? "--"} °C</h1>
+                    <p><i class="wi wi-humidity icon icon-lg"></i> ${sonde.humidity ?? "--"} %</p>
+                    ${sonde.pressure != null ? `<p><i class="wi wi-barometer icon icon-lg"></i> ${sonde.pressure} hPa</p>` : "" }      
+                    ${sonde.created_at ? `<p><i class="wi wi-time-3 icon-lg"></i> ${new Date(sonde.created_at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}</p>` : "" }            
                 </div>
             `;
 
@@ -160,19 +160,15 @@ async function loadWeatherFM() {
  
         const iconClass = getWeatherIcon(weatherCode);
  
-        document.getElementById("weather").innerHTML = `
-            <div class="mf-header">
-                <div class="mf-logo-badge">MF</div>
-                <div class="mf-logo-text">MÉTÉO FRANCE</div>
-            </div>
- 
-            <div class="mf-main">
-                <div class="mf-icon"><i class="wi ${iconClass}"></i></div>
+        document.getElementById("weatherCard").innerHTML = `
+
+            <div class="mf-main flex-center">
+                <div class="mf-icon icon-xl"><i class="wi ${iconClass}"></i></div>
                 <div class="mf-temp-block">
                     <div class="mf-temp">${temp.toFixed(1)}°C</div>
-                    <div class="mf-feels">RESSENTI ${app_temp.toFixed(1)}°C</div>
+                    <div class="mf-feels label">RESSENTI ${app_temp.toFixed(1)}°C</div>
                 </div>
-                <div class="mf-right">
+                <div class="mf-right grid-auto">
                     <span class="mf-ic"><i class="wi wi-strong-wind"></i></span>
                     <span class="mf-val">${wind_speed_10m} km/h</span>
                     <span class="mf-ic"><i class="wi wi-direction-up-right"></i></span>
@@ -184,18 +180,18 @@ async function loadWeatherFM() {
                 </div>
             </div>
  
-            <div class="mf-stats">
-                <div class="mf-stat">
-                    <div class="mf-stat-label">Humidité</div>
-                    <div class="mf-stat-val"><i class="wi wi-humidity"></i> ${rel_hum} %</div>
+            <div class="grid grid-3">
+                <div class="mf-stat subPanel">
+                    <div class="mf-stat-label label">Humidité</div>
+                    <div class="value"><i class="wi wi-humidity"></i> ${rel_hum} %</div>
                 </div>
-                <div class="mf-stat">
-                    <div class="mf-stat-label">Précipitations</div>
-                    <div class="mf-stat-val"><i class="wi wi-rain"></i> ${precipitation} mm</div>
+                <div class="mf-stat subPanel">
+                    <div class="mf-stat-label label">Précipitations</div>
+                    <div class="value"><i class="wi wi-rain"></i> ${precipitation} mm</div>
                 </div>
-                <div class="mf-stat">
-                    <div class="mf-stat-label">Pression</div>
-                    <div class="mf-stat-val mf-blue"><i class="wi wi-barometer"></i> ${p_surface.toFixed(0)} hPa</div>
+                <div class="mf-stat subPanel">
+                    <div class="mf-stat-label label">Pression</div>
+                    <div class="value mf-blue"><i class="wi wi-barometer"></i> ${p_surface.toFixed(0)} hPa</div>
                 </div>
             </div>
         `;
@@ -222,9 +218,9 @@ async function loadWeatherFM() {
             const icon = getWeatherIcon(code);
  
             rows.push(`
-                <div class="mf-day">
-                    <div class="mf-day-label">${dayLabel}</div>
-                    <div class="mf-day-icon"><i class="wi ${icon}"></i></div>
+                <div class="mf-day subPanel">
+                    <div class="mf-day-label label">${dayLabel}</div>
+                    <div class="mf-day-icon icon-lg"><i class="wi ${icon}"></i></div>
                     <div class="mf-day-max">${dayMax.toFixed(1)}°</div>
                     <div class="mf-day-min">${dayMin.toFixed(1)}°</div>
                 </div>
@@ -364,24 +360,17 @@ async function loadWeatherMetar() {
         const json = await response.json();
         const data = json[0];
 
-        document.getElementById("metar").innerHTML = `
+        document.getElementById("metarCard").innerHTML = `
 
 
-            <div class="metarHeader">
-
-                <h2>
-                    <i class="bi bi-airplane-fill"></i>
-                    LFRN METAR
-                </h2>
-
-                <div class="metarTime">
+            <div class="sectionTitle flex-between">
+                <div>
                     ${new Date(data.reportTime).toLocaleTimeString("fr-FR", {
                         hour: "2-digit",
                         minute: "2-digit",
                         timeZone: "UTC"
                     })} UTC
                 </div>
-
             </div>
 
 
@@ -390,37 +379,37 @@ async function loadWeatherMetar() {
             </div>
 
 
-            <div class="metarGrid">
+            <div class="grid grid-3">
 
-                <div class="metarItem">
-                    <i class="wi wi-thermometer"></i>
+                <div class="metarItem subPanel">
+                    <i class="wi wi-thermometer icon icon-lg"></i>
                     <span>${data.temp}°C</span>
                     <small>Température</small>
                 </div>
 
-                <div class="metarItem">
-                    <i class="wi wi-humidity"></i>
+                <div class="metarItem subPanel">
+                    <i class="wi wi-humidity icon icon-lg"></i>
                     <span>${data.dewp}°C</span>
                     <small>Point de rosée</small>
                 </div>
 
-                <div class="metarItem">
-                    <i class="wi wi-barometer"></i>
+                <div class="metarItem subPanel">
+                    <i class="wi wi-barometer icon icon-lg"></i>
                     <span>${data.altim}</span>
                     <small>QNH</small>
                 </div>
 
-                <div class="windCompass">
+                <div class="windCompass flex flex-center">
                     ${makeCompassSVG(data.wdir, data.wspd, data.wgst)}
                 </div>
 
-                <div class="metarItem">
-                    <i class="wi wi-fog"></i>
+                <div class="metarItem subPanel">
+                    <i class="wi wi-fog icon icon-lg"></i>
                     <span>${data.visib}</span>
                     <small>Visibilité</small>
                 </div>
 
-                <div class="metarItem">
+                <div class="metarItem subPanel">
                     <div class="cover">
                         ${data.cover}
                     </div>
@@ -473,66 +462,38 @@ async function loadWeatherMetar() {
       }
     }
 
-    async function loadTrends() {
-
-    try {
+async function loadTrends() {
 
         const response = await fetch("/api/trend");
         const trends = await response.json();
 
-        const indoor = trends.find(t => t.type === "indoor") || {};
-        const outdoor = trends.find(t => t.type === "outdoor") || {};
+        let html = `<div class="trendContainer flex-center">`;
+        for (const zone of trends) {
 
+            html += `
+                <div class="subPanel">
 
-        document.getElementById("trend").innerHTML = `
+                    <h3>${zone.type}</h3>
+                    <i class="wi wi-thermometer icon icon-lg"></i>
+                    <p>temperature Moyenne il y a une heure : ${zone.temperature_1h} °C </p> 
+                    <p>temperature Moyenne actuel : ${zone.temperature } °C </p> 
+                    <p>tendance = ${trend(zone.temperature_trend,"°C")}</p>
+                    <i class="wi wi-humidity icon icon-lg"></i> 
+                    <p>humidité Moyenne il y a une heure : ${zone.humidity_1h} %< /p> 
+                    <p>humidité Moyenne actuel : ${zone.humidity } % </p> 
+                    <p>tendance = ${trend(zone.humidity_trend,"%")}</p>
+                    <i class="wi wi-barometer icon icon-lg"></i>
+                    <p>pression Moyenne il y a une heure : ${zone.pressure_1h} hPa < /p> 
+                    <p>pression Moyenne actuel : ${zone.pressure } hPa </p>
+                    <p>tendance = ${trend(zone.pressure_trend," hPa")}</p>
 
-        <div class="trendCard">
+                </div>
+            `;
+        }
 
-            <h3>🌳 Extérieur</h3>
+        html += `</div>`;
 
-            <p>
-                🌡 Température :
-                ${trend(outdoor.temperature_trend,"°C")}
-            </p>
-
-            <p>
-                💧 Humidité :
-                ${trend(outdoor.humidity_trend,"%")}
-            </p>
-
-            <p>
-                🧭 Pression :
-                ${trend(outdoor.pressure_trend," hPa")}
-            </p>
-
-        </div>
-
-        <div class="trendCard">
-
-            <h3>🏠 Intérieur</h3>
-
-            <p>
-                🌡 Température :
-                ${trend(indoor.temperature_trend,"°C")}
-            </p>
-
-            <p>
-                💧 Humidité :
-                ${trend(indoor.humidity_trend,"%")}
-            </p>
-
-            <p>
-                🧭 Pression :
-                ${trend(indoor.pressure_trend," hPa")}
-            </p>
-
-        </div>
-
-        `;    } catch(err) {
-
-        console.error("Erreur tendances :", err);
-
-    }
+        document.getElementById("trend").innerHTML = html;
 
 }
 

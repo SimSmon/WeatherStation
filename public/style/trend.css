@@ -1,0 +1,19 @@
+.trendUp{
+    color:#4CAF50;
+    font-weight:bold;
+}
+
+.trendDown{
+    color:#ff5252;
+    font-weight:bold;
+}
+
+.trendFlat{
+    color:#bdbdbd;
+}
+
+.trendContainer{
+    gap:15px;
+    align-items:stretch;
+    flex-wrap:wrap;
+}
