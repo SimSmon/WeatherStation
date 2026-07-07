@@ -473,66 +473,31 @@ async function loadWeatherMetar() {
       }
     }
 
-    async function loadTrends() {
-
-    try {
+async function loadTrends() {
 
         const response = await fetch("/api/trend");
         const trends = await response.json();
 
-        const indoor = trends.find(t => t.type === "indoor") || {};
-        const outdoor = trends.find(t => t.type === "outdoor") || {};
+        let html = `<div class="trendContainer">`;
+        html += `<h2>SONDES</h2>`
+        for (const zone of trends) {
 
+            html += `
+                <div class="trendCard card">
 
-        document.getElementById("trend").innerHTML = `
+                    <h3>${zone.type}</h3>
 
-        <div class="trendCard">
+                    <p>🌡 ${trend(zone.temperature_trend,"°C")}</p>
+                    <p>💧 ${trend(zone.humidity_trend,"%")}</p>
+                    <p>🧭 ${trend(zone.pressure_trend," hPa")}</p>
 
-            <h3>🌳 Extérieur</h3>
+                </div>
+            `;
+        }
 
-            <p>
-                🌡 Température :
-                ${trend(outdoor.temperature_trend,"°C")}
-            </p>
+        html += `</div>`;
 
-            <p>
-                💧 Humidité :
-                ${trend(outdoor.humidity_trend,"%")}
-            </p>
-
-            <p>
-                🧭 Pression :
-                ${trend(outdoor.pressure_trend," hPa")}
-            </p>
-
-        </div>
-
-        <div class="trendCard">
-
-            <h3>🏠 Intérieur</h3>
-
-            <p>
-                🌡 Température :
-                ${trend(indoor.temperature_trend,"°C")}
-            </p>
-
-            <p>
-                💧 Humidité :
-                ${trend(indoor.humidity_trend,"%")}
-            </p>
-
-            <p>
-                🧭 Pression :
-                ${trend(indoor.pressure_trend," hPa")}
-            </p>
-
-        </div>
-
-        `;    } catch(err) {
-
-        console.error("Erreur tendances :", err);
-
-    }
+        document.getElementById("trend").innerHTML = html;
 
 }
 
