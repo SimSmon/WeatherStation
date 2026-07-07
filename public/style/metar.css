@@ -1,0 +1,99 @@
+.flightRule{
+ 
+    width:90px;
+    text-align:center;
+ 
+    padding:8px;
+ 
+    border-radius:8px;
+ 
+    font-weight:bold;
+ 
+    margin-bottom:20px;
+ 
+}
+ 
+.flightRule.VFR{
+ 
+    background:#1b5e20;
+    color:#9cff57;
+ 
+}
+ 
+.flightRule.MVFR{
+ 
+    background:#1565c0;
+ 
+}
+ 
+.flightRule.IFR{
+ 
+    background:#c62828;
+ 
+}
+ 
+.flightRule.LIFR{
+ 
+    background:#8e24aa;
+ 
+}
+ 
+.metarItem{
+    text-align:center;
+}
+ 
+.metarItem span{
+ 
+    display:block;
+ 
+    font-size:28px;
+ 
+    margin-top:10px;
+ 
+    font-weight:bold;
+ 
+}
+ 
+.metarItem small{
+ 
+    color:#999;
+ 
+}
+ 
+.metarClouds{
+ 
+    margin-top:20px;
+ 
+    text-align:center;
+ 
+}
+ 
+.cover{
+ 
+    font-size:34px;
+ 
+    color: var(--green);
+ 
+    font-weight:bold;
+ 
+}
+ 
+.metarRaw{
+ 
+    margin-top:20px;
+ 
+    font-family:monospace;
+ 
+    background:black;
+ 
+    color:#57ff57;
+ 
+    padding:10px;
+ 
+    border-radius:8px;
+ 
+}
+ 
+.windCompass{
+    grid-column: span 1;
+}

@@ -1,0 +1,82 @@
+.mf-header {
+    margin-bottom:15px;
+}
+
+.mf-main {
+    margin-bottom: 14px;
+}
+ 
+.mf-icon {
+    line-height: 1;
+    flex-shrink: 0;
+}
+ 
+.mf-temp-block {
+    flex-shrink: 0;
+}
+ 
+.mf-temp {
+    font-size: 48px;
+    font-weight: bold;
+    color: var(--orange);
+    line-height: 1;
+}
+ 
+.mf-feels {
+    margin-top: 4px;
+}
+ 
+.mf-right {
+    margin-left: auto;
+    font-size: 13px;
+    color: var(--text2);
+    align-items: center;
+}
+ 
+.mf-ic {
+    font-size: 18px;
+    text-align: center;
+}
+ 
+.mf-val {
+    white-space: nowrap;
+}
+ 
+.mf-stats {
+    margin-bottom: 14px;
+}
+ 
+.mf-stat {
+    text-align: center;
+}
+ 
+.mf-stat-label {
+    margin-bottom: 4px;
+}
+ 
+.mf-blue {
+    color: var(--blue);
+}
+ 
+.mf-day {
+    text-align: center;
+}
+ 
+.mf-day-label {
+    margin-bottom: 4px;
+}
+ 
+.mf-day-icon {
+    margin-bottom: 4px;
+}
+ 
+.mf-day-max {
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--orange);
+}
+ 
+.mf-day-min {
+    font-size: 12px;
+    color: var(--blue);
+}
