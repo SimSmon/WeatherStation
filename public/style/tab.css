@@ -1,37 +1,93 @@
-    .tabs-nav {
-      gap: 10px;
-      margin-bottom: 20px;
-      padding-bottom: 10px;
-    }
+.sidebar{
 
-    .tab-btn {
-      padding: 12px 24px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      border: 1px solid #141A1F;
-      background-color: #010509;
-      color: #D6E0EB;
-      border-radius: 6px;
-      transition: all 0.2s ease-in-out;
-    }
+    width:80px;
 
-    /* Style de l'onglet sélectionné */
-    .tab-btn.active {
-      background-color: #071018;
-      color: #0881F7;
-      border-color: #0881F7;
-      box-shadow: 0 4px 6px rgba(52, 152, 219, 0.2);
-    }
+    background:var(--panel1);
 
-    /* Boîtier de contenu des onglets */
-    .tab-content {
-      padding: 25px;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    }
+    border-right:1px solid var(--border);
 
-    /* Classe magique pour masquer le contenu */
-    .hidden {
-      display: none !important;
-    }
+    display:flex;
+
+    flex-direction:column;
+
+    padding:20px 15px;
+
+    gap:10px;
+
+}
+
+.logo{
+
+    text-align:center;
+
+    font-size:42px;
+
+    color:var(--blue);
+
+    margin-bottom:20px;
+
+}
+
+.nav-btn{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding:15px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:none;
+
+    color:var(--text2);
+
+    cursor:pointer;
+
+    transition:.2s;
+
+    font-size:16px;
+
+}
+
+.nav-btn:hover{
+
+    background:var(--panel2);
+
+}
+
+.nav-btn.active{
+
+    background:var(--panel2);
+
+    color:var(--blue);
+
+}
+
+.nav-btn i{
+
+    font-size:24px;
+
+}
+
+.main{
+
+    flex:1;
+
+    padding:20px;
+
+    overflow:auto;
+
+}
+
+.tab-content{
+    display:block;
+}
+
+.hidden{
+    display:none !important;
+}

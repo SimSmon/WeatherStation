@@ -174,4 +174,84 @@ ORDER BY type;
 
 });
 
+router.get("/history", async (req, res) => {
+
+    try {
+
+        const hours = Number(req.query.hours || 24);
+
+        let bucket;
+
+        if (hours <= 1)
+            bucket = "2 minutes";
+
+        else if (hours <= 6)
+            bucket = "5 minutes";
+
+        else if (hours <= 24)
+            bucket = "10 minutes";
+
+        else if (hours <= 72)
+            bucket = "30 minutes";
+
+        else
+            bucket = "1 hour";
+
+        const result = await pool.query(`
+            WITH history AS (
+
+            SELECT
+
+                s.name,
+                s.type,
+
+                date_bin(
+                    $2::interval,
+                    m.created_at,
+                    TIMESTAMP '2000-01-01'
+                ) AS bucket,
+
+                AVG(m.temperature) AS temperature,
+                AVG(m.humidity) AS humidity,
+                AVG(m.pressure) AS pressure
+
+            FROM measurements m
+
+            JOIN sensors s
+                ON s.sensor_id = m.sensor_id
+
+            WHERE m.created_at >= NOW() - ($1 * INTERVAL '1 hour')
+
+            GROUP BY
+
+                s.name,
+                s.type,
+                bucket
+
+        )
+
+        SELECT *
+
+        FROM history
+
+        ORDER BY bucket;
+        `
+            , [hours, bucket]);
+
+        res.json(result.rows);
+
+    }
+
+    catch(err){
+
+        console.error(err);
+
+        res.status(500).json({
+            error: err.message
+        });
+
+    }
+
+});
+
 module.exports = router;

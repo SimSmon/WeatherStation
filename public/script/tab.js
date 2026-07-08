@@ -3,24 +3,26 @@
 // ==============================
 
 
-// Logique de basculement des onglets
-    function switchTab(event, tabName) {
-      // 1. On cache toutes les sections
-      const contents = document.querySelectorAll('.tab-content');
-      contents.forEach(content => content.classList.add('hidden'));
+function switchTab(event, tabName) {
 
-      // 2. On désactive tous les boutons
-      const buttons = document.querySelectorAll('.tab-btn');
-      buttons.forEach(btn => btn.classList.remove('active'));
+    console.log("Onglet :", tabName);
 
-      // 3. On affiche la section demandée
-      document.getElementById('tab-' + tabName).classList.remove('hidden');
+    const contents = document.querySelectorAll(".tab-content");
+    console.log(contents);
 
-      // 4. On active le bouton sur lequel on a cliqué
-      event.currentTarget.classList.add('active');
+    contents.forEach(content => content.classList.add("hidden"));
 
-      // (Optionnel) Ici, on pourra lancer une fonction fetch spécifique selon l'onglet cliqué
-      if (tabName === 'charts') {
-        console.log("Lancement du chargement des graphiques...");
-      }
-    }
+    const buttons = document.querySelectorAll(".nav-btn");
+    console.log(buttons);
+
+    buttons.forEach(btn => btn.classList.remove("active"));
+
+    const target = document.getElementById("tab-" + tabName);
+
+    console.log(target);
+
+    target.classList.remove("hidden");
+
+    event.currentTarget.classList.add("active");
+
+}
