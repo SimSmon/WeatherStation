@@ -16,67 +16,130 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/css/weather-icons.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
-<body>
-    
-    <div id="time"></div>
-    
-    <nav class="tabs-nav flex">
-        <button class="tab-btn active" onclick="switchTab(event, 'home')"><i class="bi bi-house"></i> TABLEAU DE BORD</button>
-        <button class="tab-btn" onclick="switchTab(event, 'charts')"><i class="bi bi-graph-up"></i> GRAPHIQUE</button>
-        <!-- <button class="tab-btn" onclick="switchTab(event, 'config')">⚙️ Configuration</button> -->
-    </nav>
+<body> 
 
-    <div id="tab-live" class="tab-content">
-        
-    <div class="section card">
-            <h2 class="sectionTitle">
-                <i class="bi bi-cpu"></i>
-                Sondes
-            </h2>
+    <div class="app">
 
-            <div id="sondes" class="cards"></div>
-    </div>
+        <aside class="sidebar">
 
-    <div class="section cards">
-        <div class="card">
-            <div class="sectionTitle flex-between">
-                <h2 class="sectionTitle mf-header flex-between">
-                    <i class="bi bi-cloud-sun"></i>
-                    Météo France
-                </h2>
+            <div class="logo">
+                <i class="bi bi-cloud-sun"></i>
             </div>
-            <div id="weatherCard">Chargement météo...</div>
-            <div id="forecastContainer" class="grid grid-auto"></div>
-        </div>
 
-        <div class="card">
-            <div class="sectionTitle flex-between">
-                <h2>
-                    <i class="bi bi-airplane-fill"></i>
-                        LFRN METAR
-                </h2>
+            <button class="nav-btn active"
+                    onclick="switchTab(event,'home')">
+                <i class="bi bi-speedometer2"></i>
+                <!-- <span>Dashboard</span> -->
+            </button>
+
+            <button class="nav-btn"
+                    onclick="switchTab(event,'charts')">
+                <i class="bi bi-graph-up"></i>
+                <!-- <span>Graphiques</span> -->
+            </button>
+
+            <button class="nav-btn"
+                    onclick="switchTab(event,'history')">
+                <i class="bi bi-clock-history"></i>
+                <!-- <span>Historique</span> -->
+            </button>
+
+            <button class="nav-btn"
+                    onclick="switchTab(event,'aviation')">
+                <i class="bi bi-airplane"></i>
+                <!-- <span>Aviation</span> -->
+            </button>
+
+            <button class="nav-btn"
+                    onclick="switchTab(event,'config')">
+                <i class="bi bi-gear"></i>
+                <!-- <span>Configuration</span> -->
+            </button>
+
+        </aside>
+
+        <main class="main">
+
+            <div id="time"></div>
+
+            <div id="tab-home" class="tab-content">
+                
+                <div class="section card">
+                        <h2 class="sectionTitle">
+                            <i class="bi bi-cpu"></i>
+                            Sondes
+                        </h2>
+
+                        <div id="sondes" class="cards"></div>
+                </div>
+
+                <div class="section cards">
+                    <div class="card">
+                        <div class="sectionTitle flex-between">
+                            <h2 class="sectionTitle mf-header flex-between">
+                                <i class="bi bi-cloud-sun"></i>
+                                Météo France
+                            </h2>
+                        </div>
+                        <div id="weatherCard">Chargement météo...</div>
+                        <div id="forecastContainer" class="grid grid-auto"></div>
+                    </div>
+
+                    <div class="card">
+                        <div class="sectionTitle flex-between">
+                            <h2>
+                                <i class="bi bi-airplane-fill"></i>
+                                    LFRN METAR
+                            </h2>
+                        </div>
+                        <div id="metarCard">Chargement metar...</div>
+                    </div>
+                </div>
+
+                <div class="section card">
+
+                    <h2 class="sectionTitle">
+                        <i class="bi bi-graph-up-arrow"></i>
+                        Tendances
+                    </h2>
+
+                    <div id="trend" class="trendContainer"></div>
+
+                </div>
             </div>
-            <div id="metarCard">Chargement metar...</div>
-        </div>
+
+            <div id="tab-charts" class="tab-content hidden">
+                <h2>Évolution sur les dernières 24 heures</h2>
+                <p>Graphiques des relevés stockés en base de données.</p>
+            </div>
+
+            <div id="tab-history" class="tab-content hidden">
+
+                history
+
+            </div>
+
+            <div id="tab-aviation" class="tab-content hidden">
+
+                aviation
+
+            </div>
+
+            <div id="tab-config" class="tab-content hidden">
+
+                config
+
+            </div>
+        </main>
     </div>
 
-    <div class="section card">
-
-        <h2 class="sectionTitle">
-            <i class="bi bi-graph-up-arrow"></i>
-            Tendances
-        </h2>
-
-        <div id="trend" class="trendContainer"></div>
-
-    </div>
-
-    <div id="tab-charts" class="tab-content hidden">
-        <h2>Évolution sur les dernières 24 heures</h2>
-        <p>Graphiques des relevés stockés en base de données.</p>
-    </div>
-
-    <script src="script.js"></script>
+    <script src="script/metar.js"></script>
+    <script src="script/openMeteo.js"></script>
+    <script src="script/sensor.js"></script>
+    <script src="script/tab.js"></script>
+    <script src="script/trend.js"></script>
+    <script src="script/time.js"></script>
+    <script src="script/script.js"></script>
 
 </body>
 </html>
