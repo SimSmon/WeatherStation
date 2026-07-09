@@ -27,9 +27,25 @@ function drawChart(rows, dataName, canvasId){
             labels.push(label);
 
         if(!datasets[row.name])
-            datasets[row.name] = [];
+            datasets[row.name] = {
+            label: row.name,
+            color: row.color,
+            values: []
+        };
 
-        datasets[row.name].push(row[dataName]);
+        datasets: Object.values(datasets).map(sensor => ({
+
+            label: sensor.label,
+
+            data: sensor.values,
+
+            borderColor: sensor.color,
+
+            backgroundColor: sensor.color,
+
+            tension:0.3
+
+        }))
 
     }
 
