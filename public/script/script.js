@@ -7,6 +7,7 @@ loadWeather();    // Sondes locales ESP32
 loadWeatherFM();  // API Open-Meteo
 loadWeatherMetar();
 loadTrends();
+loadCharts();
 
 // Sondes ESP32 toutes les 2 minutes
 setInterval(loadWeather, 120000);

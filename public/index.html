@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="style/sensors.css">
     <link rel="stylesheet" href="style/trend.css">
     <link rel="stylesheet" href="style/tab.css">
+    <link rel="stylesheet" href="style/chart.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.12/css/weather-icons.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
@@ -109,8 +110,29 @@
             </div>
 
             <div id="tab-charts" class="tab-content hidden">
-                <h2>Évolution sur les dernières 24 heures</h2>
-                <p>Graphiques des relevés stockés en base de données.</p>
+
+                <div class="chartToolbar">
+
+                    <button onclick="loadCharts(1)">1 h</button>
+                    <button onclick="loadCharts(6)">6 h</button>
+                    <button onclick="loadCharts(24)">24 h</button>
+                    <button onclick="loadCharts(72)">72 h</button>
+
+                </div>
+                <div class="card">
+                    <h2>Température</h2>
+                    <canvas id="temperatureChart"></canvas>
+                </div>
+
+                <div class="card">
+                    <h2>Humidité</h2>
+                    <canvas id="humidityChart"></canvas>
+                </div>
+
+                <div class="card">
+                    <h2>Pression</h2>
+                    <canvas id="pressureChart"></canvas>
+                </div>
             </div>
 
             <div id="tab-history" class="tab-content hidden">
@@ -133,6 +155,8 @@
         </main>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script/chart.js"></script>
     <script src="script/metar.js"></script>
     <script src="script/openMeteo.js"></script>
     <script src="script/sensor.js"></script>
