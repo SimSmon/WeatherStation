@@ -13,6 +13,10 @@ router.get("/sensors", async (req, res) => {
                 s.name,
                 s.location,
                 s.firmware,
+                s.color,
+                s.icon,
+                s.display_order,
+                s.enabled ,
                 m.temperature,
                 m.humidity,
                 m.pressure,
@@ -26,8 +30,8 @@ router.get("/sensors", async (req, res) => {
             LEFT JOIN measurements m
                 ON s.sensor_id = m.sensor_id
             ORDER BY
-                m.sensor_id,
-                m.created_at DESC;
+                s.display_order,
+                s.name;
         `);
 
         res.json(result.rows);

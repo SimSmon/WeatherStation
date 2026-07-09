@@ -1,0 +1,22 @@
+.chartBox{
+
+    position:relative;
+
+    max-height:300px;
+
+    width:100%;
+
+}
+
+.chartBox canvas{
+
+    width:100% !important;
+    height:100% !important;
+
+}
+
+canvas{
+
+    max-height:300px;
+
+}
