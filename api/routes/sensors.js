@@ -230,6 +230,7 @@ router.get("/history", async (req, res) => {
 
                 s.name,
                 s.type,
+                s.color,
                 bucket
 
         )
