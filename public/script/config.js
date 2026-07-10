@@ -29,7 +29,7 @@ async function loadConfig(){
                 <label>Type</label>
 
                 <input
-                    id="name-${sensor.sensor_id}"
+                    id="type-${sensor.sensor_id}"
                     value="${sensor.type}">
 
                 <label>Couleur</label>
