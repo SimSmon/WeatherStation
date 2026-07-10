@@ -3,9 +3,9 @@ async function loadCharts(period = 24){
     const response = await fetch(`/api/history?hours=${period}`);
     const rows = await response.json();
 
-    drawChart(rows,"temperature","temperatureChart");
-    drawChart(rows,"humidity","humidityChart");
-    drawChart(rows,"pressure","pressureChart");
+    drawChart(rows, "temperature", "temperatureChart");
+    drawChart(rows, "humidity", "humidityChart");
+    drawChart(rows, "pressure", "pressureChart");
 
 }
 
@@ -26,26 +26,20 @@ function drawChart(rows, dataName, canvasId){
         if(!labels.includes(label))
             labels.push(label);
 
-        if(!datasets[row.name])
+        if(!datasets[row.name]){
+
             datasets[row.name] = {
-            label: row.name,
-            color: row.color,
-            values: []
-        };
 
-        datasets: Object.values(datasets).map(sensor => ({
+                label: row.name,
+                color: row.color,
+                values: []
 
-            label: sensor.label,
+            };
 
-            data: sensor.values,
+        }
 
-            borderColor: sensor.color,
-
-            backgroundColor: sensor.color,
-
-            tension:0.3
-
-        }))
+        // <-- c'est ce qui manquait
+        datasets[row.name].values.push(row[dataName]);
 
     }
 
@@ -53,19 +47,26 @@ function drawChart(rows, dataName, canvasId){
 
         labels,
 
-        datasets:Object.entries(datasets).map(([name,data])=>({
+        datasets: Object.values(datasets).map(sensor => ({
 
-            label:name,
+            label: sensor.label,
+            data: sensor.values,
 
-            data,
+            borderColor: sensor.color,
+            backgroundColor: sensor.color,
 
-            tension:0.3
+            borderWidth: 3,
+
+            pointRadius: 0,
+            pointHoverRadius: 6,
+
+            tension: 0.35,
+            fill: false
 
         }))
 
     };
 
-    // graphique déjà créé ?
     if(charts[canvasId]){
 
         charts[canvasId].data = chartData;
@@ -77,13 +78,15 @@ function drawChart(rows, dataName, canvasId){
 
     charts[canvasId] = new Chart(document.getElementById(canvasId),{
 
-        type:"line",
+        type: "line",
 
-        data:chartData,
+        data: chartData,
 
         options:{
-            responsive:true,
-            maintainAspectRatio:false
+
+            responsive: true,
+            maintainAspectRatio: false
+
         }
 
     });

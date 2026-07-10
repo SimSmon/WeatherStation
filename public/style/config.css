@@ -1,0 +1,98 @@
+.configGrid{
+
+    display:grid;
+
+    gap:20px;
+
+}
+
+.sensorConfig{
+
+    background:var(--panel2);
+
+    border-radius:12px;
+
+    padding:20px;
+
+}
+
+.sensorHeader{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:20px;
+
+}
+
+.sensorHeader h3{
+
+    margin:0;
+
+}
+
+.formGrid{
+
+    display:grid;
+
+    grid-template-columns:150px 1fr;
+
+    gap:12px 20px;
+
+    align-items:center;
+
+}
+
+.formGrid label{
+
+    font-weight:bold;
+
+    color:var(--text2);
+
+}
+
+.formGrid input,
+.formGrid select{
+
+    width:100%;
+
+    padding:8px 12px;
+
+    border:none;
+
+    border-radius:8px;
+
+    background:#0d131d;
+
+    color:white;
+
+}
+
+.sensorActions{
+
+    margin-top:20px;
+
+    display:flex;
+
+    justify-content:flex-end;
+
+}
+
+.saveBtn{
+
+    padding:10px 20px;
+
+    border:none;
+
+    border-radius:8px;
+
+    background:var(--blue);
+
+    color:white;
+
+    cursor:pointer;
+
+}

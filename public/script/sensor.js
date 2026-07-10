@@ -17,7 +17,7 @@ async function loadWeather() {
                         <h3 style="color:${sonde.color}"><i class="bi ${wifi.icon} wifi-icon" title="${wifi.label} (${sonde.wifi_rssi ?? "?"} dBm)">${sonde.name}</i></h3> 
                     </div>
                      
-                    <h1><i class="wi wi-thermometer icon icon-lg"></i> ${sonde.temperature ?? "--"} °C</h1>
+                    <h1 class="temp"><i class="wi wi-thermometer icon icon-lg"></i> ${sonde.temperature ?? "--"} °C</h1>
                     <p><i class="wi wi-humidity icon icon-lg"></i> ${sonde.humidity ?? "--"} %</p>
                     ${sonde.pressure != null ? `<p><i class="wi wi-barometer icon icon-lg"></i> ${sonde.pressure} hPa</p>` : "" }      
                     ${sonde.created_at ? `<p><i class="wi wi-time-3 icon-lg"></i> ${new Date(sonde.created_at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}</p>` : "" }            
