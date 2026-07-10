@@ -227,7 +227,7 @@ router.get("/history", async (req, res) => {
             WHERE m.created_at >= NOW() - ($1 * INTERVAL '1 hour')
 
             GROUP BY
-            
+
                 s.sensor_id,
                 s.name,
                 s.type,
@@ -257,6 +257,55 @@ router.get("/history", async (req, res) => {
         });
 
     }
+
+});
+
+router.put("/sensors/:id", async(req,res)=>{
+
+    const id = req.params.id;
+
+    const {
+
+        name,
+        color,
+        icon,
+        display_order,
+        visible
+
+    } = req.body;
+
+    await pool.query(
+
+        `UPDATE sensors
+
+        SET
+
+            name=$1,
+            color=$2,
+            icon=$3,
+            display_order=$4,
+            visible=$5
+
+        WHERE sensor_id=$6`,
+
+        [
+
+            name,
+            color,
+            icon,
+            display_order,
+            visible,
+            id
+
+        ]
+
+    );
+
+    res.json({
+
+        success:true
+
+    });
 
 });
 
