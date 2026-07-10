@@ -208,13 +208,13 @@ router.get("/history", async (req, res) => {
 
                 s.name,
                 s.type,
-
+                s.color,
                 date_bin(
                     $2::interval,
                     m.created_at,
                     TIMESTAMP '2000-01-01'
                 ) AS bucket,
-
+                    
                 AVG(m.temperature) AS temperature,
                 AVG(m.humidity) AS humidity,
                 AVG(m.pressure) AS pressure
@@ -227,7 +227,8 @@ router.get("/history", async (req, res) => {
             WHERE m.created_at >= NOW() - ($1 * INTERVAL '1 hour')
 
             GROUP BY
-
+            
+                s.sensor_id,
                 s.name,
                 s.type,
                 s.color,
