@@ -12,12 +12,6 @@ async function loadConfig(){
 
         <div class="sensorConfig flex-between">
 
-            <div class="sensorHeader">
-
-                <h3>${sensor.name}</h3>
-
-            </div>
-
             <div class="formGrid">
 
                 <label>Nom</label>
