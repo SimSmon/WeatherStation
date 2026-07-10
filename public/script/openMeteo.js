@@ -67,7 +67,7 @@ async function loadWeatherFM() {
                 </div>
             </div>
  
-            <div class="grid grid-3">
+            <div class="mf-stats grid grid-3">
                 <div class="mf-stat subPanel">
                     <div class="mf-stat-label label">Humidité</div>
                     <div class="value"><i class="wi wi-humidity"></i> ${rel_hum} %</div>
@@ -105,7 +105,7 @@ async function loadWeatherFM() {
             const icon = getWeatherIcon(code);
  
             rows.push(`
-                <div class="mf-day subPanel">
+                <div class="mf-day subPanel grid-auto">
                     <div class="mf-day-label label">${dayLabel}</div>
                     <div class="mf-day-icon icon-lg"><i class="wi ${icon}"></i></div>
                     <div class="mf-day-max">${dayMax.toFixed(1)}°</div>

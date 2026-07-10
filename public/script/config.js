@@ -10,13 +10,11 @@ async function loadConfig(){
 
         html += `
 
-        <div class="sensorConfig">
+        <div class="sensorConfig flex-between">
 
             <div class="sensorHeader">
 
                 <h3>${sensor.name}</h3>
-
-                <span>${sensor.type}</span>
 
             </div>
 
@@ -27,6 +25,12 @@ async function loadConfig(){
                 <input
                     id="name-${sensor.sensor_id}"
                     value="${sensor.name}">
+                    
+                <label>Type</label>
+
+                <input
+                    id="name-${sensor.sensor_id}"
+                    value="${sensor.type}">
 
                 <label>Couleur</label>
 
@@ -35,7 +39,7 @@ async function loadConfig(){
                     id="color-${sensor.sensor_id}"
                     value="${sensor.color}">
 
-                <label>Icône</label>
+                <!--<label>Icône</label>
 
                 <input
                     id="icon-${sensor.sensor_id}"
@@ -52,8 +56,8 @@ async function loadConfig(){
 
                 <input
                     type="checkbox"
-                    id="visible-${sensor.sensor_id}"
-                    ${sensor.enabled ? "checked" : ""}>
+                    id="enabled-${sensor.sensor_id}"
+                    ${sensor.enabled ? "checked" : ""}>-->
 
             </div>
 
@@ -89,12 +93,12 @@ async function saveSensor(id){
 
         color:document.getElementById(`color-${id}`).value,
 
-        icon:document.getElementById(`icon-${id}`).value,
+        //icon:document.getElementById(`icon-${id}`).value,
 
-        display_order:Number(document.getElementById(`order-${id}`).value),
+        // display_order:Number(document.getElementById(`order-${id}`).value),
 
-        enabled: document.getElementById(`visible-${id}`).checked
-        
+        //enabled: document.getElementById(`enabled-${id}`).checked
+
     };
 
     await fetch(`/api/sensors/${id}`,{

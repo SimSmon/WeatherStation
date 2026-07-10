@@ -267,6 +267,7 @@ router.put("/sensors/:id", async(req,res)=>{
     const {
 
         name,
+        type,
         color,
         icon,
         display_order,
@@ -281,16 +282,18 @@ router.put("/sensors/:id", async(req,res)=>{
         SET
 
             name=$1,
-            color=$2,
-            icon=$3,
-            display_order=$4,
-            enabled=$5
+            type=$2,
+            color=$3,
+            icon=$4,
+            display_order=$5,
+            enabled=$6
 
-        WHERE sensor_id=$6`,
+        WHERE sensor_id=$7`,
 
         [
 
             name,
+            type,
             color,
             icon,
             display_order,
