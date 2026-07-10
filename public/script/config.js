@@ -53,7 +53,7 @@ async function loadConfig(){
                 <input
                     type="checkbox"
                     id="visible-${sensor.sensor_id}"
-                    ${sensor.visible ? "checked" : ""}>
+                    ${sensor.enabled ? "checked" : ""}>
 
             </div>
 
@@ -61,7 +61,7 @@ async function loadConfig(){
 
                 <button
                     class="saveBtn"
-                    onclick="saveSensor(${sensor.sensor_id})">
+                    onclick='saveSensor("${sensor.sensor_id}")'>
 
                     Enregistrer
 
@@ -81,6 +81,8 @@ async function loadConfig(){
 
 async function saveSensor(id){
 
+    console.log("Sauvegarde", id);
+
     const body = {
 
         name:document.getElementById(`name-${id}`).value,
@@ -91,8 +93,8 @@ async function saveSensor(id){
 
         display_order:Number(document.getElementById(`order-${id}`).value),
 
-        visible:document.getElementById(`visible-${id}`).checked
-
+        enabled: document.getElementById(`visible-${id}`).checked
+        
     };
 
     await fetch(`/api/sensors/${id}`,{
