@@ -30,8 +30,8 @@ router.get("/sensors", async (req, res) => {
             LEFT JOIN measurements m
                 ON s.sensor_id = m.sensor_id
             ORDER BY
-                s.display_order,
-                s.name;
+                m.sensor_id,
+                m.created_at DESC;
         `);
 
         res.json(result.rows);
