@@ -227,9 +227,11 @@ router.get("/history", async (req, res) => {
             WHERE m.created_at >= NOW() - ($1 * INTERVAL '1 hour')
 
             GROUP BY
-
+            
+                s.sensor_id,
                 s.name,
                 s.type,
+                s.color,
                 bucket
 
         )
