@@ -14,7 +14,7 @@ async function loadWeather() {
             const cardHTML = `
                 <div class="subPanel grid grid-auto">
                     <div class="sectionTitle">
-                        <h3 style="color:${sondes.color}"><i class="bi ${wifi.icon} wifi-icon" title="${wifi.label} (${sonde.wifi_rssi ?? "?"} dBm)">${sonde.name}</i></h3> 
+                        <h3 style="color:${sonde.color}"><i class="bi ${wifi.icon} wifi-icon" title="${wifi.label} (${sonde.wifi_rssi ?? "?"} dBm)">${sonde.name}</i></h3> 
                     </div>
                      
                     <h1><i class="wi wi-thermometer icon icon-lg"></i> ${sonde.temperature ?? "--"} °C</h1>
