@@ -284,7 +284,7 @@ router.put("/sensors/:id", async(req,res)=>{
             color=$2,
             icon=$3,
             display_order=$4,
-            visible=$5
+            enabled=$5
 
         WHERE sensor_id=$6`,
 
