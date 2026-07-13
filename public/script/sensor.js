@@ -4,7 +4,7 @@
 
 async function loadWeather() {
     try {
-        const response = await fetch('http://192.168.1.76:3001/api/sensors');
+        const responseSensor = await fetch("/api/sensors");
         const sondes = await response.json();
 
         const sondeCards = [];
