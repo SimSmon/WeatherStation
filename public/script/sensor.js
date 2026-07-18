@@ -4,7 +4,7 @@
 
 async function loadWeather() {
     try {
-        const responseSensor = await fetch("/api/sensors");
+        const response = await fetch('http://192.168.1.76:3001/api/sensors');
         const sondes = await response.json();
 
         const sondeCards = [];
@@ -20,7 +20,9 @@ async function loadWeather() {
                     <h1 class="temp"><i class="wi wi-thermometer icon icon-lg"></i> ${sonde.temperature ?? "--"} °C</h1>
                     <p><i class="wi wi-humidity icon icon-lg"></i> ${sonde.humidity ?? "--"} %</p>
                     ${sonde.pressure != null ? `<p><i class="wi wi-barometer icon icon-lg"></i> ${sonde.pressure} hPa</p>` : "" }      
-                    ${sonde.created_at ? `<p><i class="wi wi-time-3 icon-lg"></i> ${new Date(sonde.created_at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}</p>` : "" }            
+                    ${sonde.created_at ? `<p><i class="wi wi-time-3 icon-lg"></i> ${new Date(sonde.created_at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}</p>` : "" }
+                    ${sonde.battery != null ? `<p><i class="bi bi-battery-full icon"></i> ${sonde.battery} <i class="bi bi-percent"></i></p>` : "" }      
+            
                 </div>
             `;
 

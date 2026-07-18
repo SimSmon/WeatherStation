@@ -33,7 +33,7 @@ const char* serverUrl = "http://192.168.1.76:3001/api/weather";
 const char* sensorId = "Sonde2";
 const char* name     = "Chambre";
 const char* location = "indoor";
-const char* firmware = "2.1.5";
+const char* firmware = "2.1.6";
 
 // ============================================================
 // BROCHES
@@ -41,7 +41,6 @@ const char* firmware = "2.1.5";
 
 #define LED_BLEUE      13
 
-#define BATTERY_ENABLE 25
 #define BATTERY_ADC    34
 
 // I2C
@@ -118,20 +117,12 @@ bool connectWiFi() {
 // ============================================================
 
 float readBatteryVoltage() {
-
-    digitalWrite(BATTERY_ENABLE, HIGH);
-
     delay(5);
 
-    int raw = analogRead(BATTERY_ADC);
+    int mv = analogReadMilliVolts(BATTERY_ADC);
 
-    digitalWrite(BATTERY_ENABLE, LOW);
-
-    float voltageADC =
-        raw * 3.3f / 4095.0f;
-
-    float batteryVoltage =
-        voltageADC * 2.0f;
+    float voltageADC = mv / 1000.0f;
+    float batteryVoltage = voltageADC * 2.0f;
 
     Serial.print("Batterie : ");
     Serial.print(batteryVoltage, 2);
@@ -144,19 +135,20 @@ float readBatteryVoltage() {
 // POURCENTAGE BATTERIE
 // ============================================================
 
-int batteryToPercent(float voltage) {
+float batteryToPercent(float v){
 
-    int percent = map(
-        voltage * 100,
-        300,
-        420,
-        0,
-        100
-    );
+    if(v >= 4.20) return 100;
+    if(v >= 4.10) return 90 + (v-4.10)*100;
+    if(v >= 4.00) return 80 + (v-4.00)*100;
+    if(v >= 3.92) return 70 + (v-3.92)*125;
+    if(v >= 3.87) return 60 + (v-3.87)*200;
+    if(v >= 3.82) return 50 + (v-3.82)*200;
+    if(v >= 3.79) return 40 + (v-3.79)*333;
+    if(v >= 3.75) return 30 + (v-3.75)*250;
+    if(v >= 3.70) return 20 + (v-3.70)*200;
+    if(v >= 3.60) return 10 + (v-3.60)*100;
 
-    percent = constrain(percent, 0, 100);
-
-    return percent;
+    return 0;
 }
 
 // ============================================================
@@ -222,8 +214,7 @@ bool sendData(
     float temp,
     float humidity,
     float pressure,
-    float batteryVoltage,
-    int batteryPercent,
+    float battery,
     int rssi
 ) {
 
@@ -276,7 +267,6 @@ bool sendData(
         battery,
         rssi
     );
-
     Serial.println("JSON :");
 
     Serial.println(payload);
@@ -345,11 +335,9 @@ void setup() {
 
     pinMode(LED_BLEUE, OUTPUT);
 
-    pinMode(BATTERY_ENABLE, OUTPUT);
-
     digitalWrite(LED_BLEUE, LOW);
 
-    digitalWrite(BATTERY_ENABLE, LOW);
+    analogSetPinAttenuation(BATTERY_ADC, ADC_11db);
 
     // I2C
 
@@ -425,6 +413,9 @@ void setup() {
     float battery = 
         readBatteryVoltage();
 
+    float batteryPercent =
+        batteryToPercent(battery); 
+
     // LED ON
 
     digitalWrite(
@@ -438,7 +429,7 @@ void setup() {
         temp,
         humidity,
         pressure,
-        battery,
+        batteryPercent,
         rssi
     );
 
